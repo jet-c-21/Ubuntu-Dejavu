@@ -89,58 +89,35 @@ unlock_sudo() {
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-check_if_firefox_installed() {
-  # Use dpkg to check if Firefox is installed
-  if dpkg -l | grep -q '^ii.*firefox'; then
-    cl_print "Firefox is already installed." "green"
+check_if_sublime_text_installed() {
+  if which subl >/dev/null 2>&1; then
     return 0
   else
-    cl_print "Firefox is not installed." "yellow"
     return 1
   fi
 }
 
 main() {
   # Check if Firefox is installed
-  if check_if_firefox_installed; then
-    cl_print "Firefox is already installed. Exit." "blue"
+  if check_if_sublime_text_installed; then
+    cl_print "Sublime Text is already installed. Exit."
     exit 0
   fi
 
   unlock_sudo
-  # 1. Create a directory to store APT repository keys if it doesn't exist
-  sudo install -d -m 0755 /etc/apt/keyrings
 
-  unlock_sudo
-  # 2. Import the Mozilla APT repository signing key
+  # 1. install GPG key
   sudo apt install -y wget
-  wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+  wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
 
-  unlock_sudo
-  # 3. Verify the signing key fingerprint
-  gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | \
-  awk '/pub/{getline; gsub(/^ +| +$/,""); if($0 == "35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3") \
-  print "\nThe key fingerprint matches ("$0").\n"; else \
-  print "\nVerification failed: the fingerprint ("$0") does not match the expected one.\n"}'
+  # 2. select stable channel to use
+  echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
 
-  unlock_sudo
-  # 4. Add the Mozilla APT repository to your sources list
-  echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | \
-  sudo tee /etc/apt/sources.list.d/mozilla.list > /dev/null
+  # 3. install sublime-text
+  sudo apt update
+  sudo apt install -y sublime-text
 
-  unlock_sudo
-  # 5. Configure APT to prioritize packages from the Mozilla repository
-  echo '
-Package: *
-Pin: origin packages.mozilla.org
-Pin-Priority: 1000
-' | sudo tee /etc/apt/preferences.d/mozilla > /dev/null
-
-  unlock_sudo
-  # 6. Update your package list and install Firefox
-  sudo apt update && sudo apt install -y firefox
-
-  cl_print "[*INFO*] - Firefox has been installed successfully." "green"
+  cl_print "[*INFO*] - Sublime Text is installed successfully."
 }
 
 main

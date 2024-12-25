@@ -173,6 +173,12 @@ EOF"
   cl_print "[*INFO*] - finish to create nosnap preference for apt."
 }
 
+install_gnome_software() {
+  cl_print "[*INFO*] - install gnome-software ..."
+  unlock_sudo
+  sudo apt install -y gnome-software
+  cl_print "[*INFO*] - gnome-software is installed."
+}
 
 main() {
   purge_all_snap_apps
@@ -181,6 +187,7 @@ main() {
   prevent_snapd_upgrade
   delete_snap_related_files
   create_nosnap_pref_for_apt
+  install_gnome_software
 
   cl_print "[*INFO*] - All done. Snap is uninstalled and blocked on your system." "green"
 }

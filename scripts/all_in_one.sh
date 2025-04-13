@@ -305,10 +305,10 @@ install_celluloid() {
 
   # Check if Celluloid is installed successfully
   if command -v celluloid >/dev/null 2>&1; then
-    cl_print "[*INFO*] - Celluloid installed successfully" "green"
+    cl_print "[*INFO*] - Celluloid installed successfully \n" "green"
     return 0
   else
-    cl_print "[*ERROR*] - Celluloid installation failed" "red"
+    cl_print "[*ERROR*] - Celluloid installation failed \n" "red"
     return 1
   fi
 }

@@ -641,7 +641,7 @@ launcher_main() {
 
     source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
     main
-    pin_app_to_dock "com.bitwarden.desktop"
+    pin_app_to_dock "com.bitwarden.desktop.desktop" # it really name like this
     
     # * update gnome settings
     source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"

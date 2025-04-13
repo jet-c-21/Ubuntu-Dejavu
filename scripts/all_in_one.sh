@@ -279,7 +279,7 @@ install_obs() {
   cl_print "[*INFO*] - start installing OBS Studio ..."
 
   unlock_sudo
-  sudo add-apt-repository ppa:obsproject/obs-studio
+  sudo add-apt-repository -y ppa:obsproject/obs-studio
   sudo apt update
   sudo apt install -y obs-studio
 
@@ -318,7 +318,7 @@ install_ubuntu_cleaner() {
 
   unlock_sudo
   sudo apt install software-properties-common
-  sudo add-apt-repository ppa:gerardpuig/ppa
+  sudo add-apt-repository -y ppa:gerardpuig/ppa
   sudo apt update
   sudo apt install -y ubuntu-cleaner
 
@@ -329,7 +329,7 @@ install_telegram() {
   cl_print "[*INFO*] - Start installing Telegram ..."
 
   unlock_sudo
-  sudo add-apt-repository ppa:atareao/telegram
+  sudo add-apt-repository -y ppa:atareao/telegram
   sudo apt update
   sudo apt install -y telegram
 
@@ -342,7 +342,7 @@ install_appimage_launcher() {
   unlock_sudo
 
   # Add the AppImageLauncher PPA
-  sudo add-apt-repository ppa:appimagelauncher-team/stable
+  sudo add-apt-repository -y ppa:appimagelauncher-team/stable
 
   # Update package list
   sudo apt update

@@ -341,6 +341,13 @@ install_appimage_launcher() {
 
   unlock_sudo
 
+  # Make sure curl is installed
+  if ! command -v curl &>/dev/null; then
+    cl_print "[*INFO*] - curl not found, installing curl..." "yellow"
+    sudo apt update
+    sudo apt install -y curl
+  fi
+
   # Get latest release URL from GitHub API
   cl_print "[*INFO*] - Fetching latest AppImageLauncher .deb URL from GitHub..." "cyan"
   local api_url="https://api.github.com/repos/TheAssassin/AppImageLauncher/releases/latest"
@@ -364,6 +371,7 @@ install_appimage_launcher() {
 
   cl_print "[*INFO*] - AppImageLauncher installed successfully via .deb" "green"
 }
+
 
 
 install_gstreamer() {

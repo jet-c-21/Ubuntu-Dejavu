@@ -131,10 +131,10 @@ purge_all_snap_apps() {
   snap_count=$(snap list | awk 'NR>1 {print $1}' | grep -v '^snapd$' | wc -l)
 
   if [[ "$snap_count" -eq 0 ]]; then
-    cl_print "[*INFO*] - No Snap apps detected. great! :)" "green"
+    cl_print "[*INFO*] - No Snap apps detected. great! :) \n" "green"
     return 0
   else
-    cl_print "[*WARN*] - Some Snap apps are still installed (excluding snapd). Please remove them manually." "red"
+    cl_print "[*WARN*] - Some Snap apps are still installed (excluding snapd). Please remove them manually. \n" "red"
     return 1
   fi
 }
@@ -229,7 +229,7 @@ install_gdebi() {
   if command -v xdg-mime &>/dev/null; then
     cl_print "[*INFO*] - setting gdebi-gtk as default handler for .deb files ..." "cyan"
     xdg-mime default gdebi.desktop application/vnd.debian.binary-package
-    cl_print "[*INFO*] - gdebi-gtk is now the default for .deb files." "green"
+    cl_print "[*INFO*] - gdebi-gtk is now the default for .deb files. \n" "green"
   else
     cl_print "[*WARN*] - xdg-mime not found. Cannot set file association." "yellow"
   fi
@@ -245,7 +245,7 @@ main() {
   install_gnome_software
   install_gdebi
 
-  cl_print "[*INFO*] - All done. Snap is uninstalled and blocked on your system." "green"
+  cl_print "[*INFO*] - All done. Snap is uninstalled and blocked on your system. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

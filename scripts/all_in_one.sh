@@ -93,7 +93,7 @@ THIS_FILE_PATH="$(realpath "${BASH_SOURCE[0]}")"
 THIS_FILE_PARENT_DIR="$(dirname "$THIS_FILE_PATH")"
 
 do_apt_update_and_upgrade() {
-  unlock sudo
+  unlock_sudo
   
   cl_print "[*INFO*] - start `sudo apt install` ..."
   sudo apt install

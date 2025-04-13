@@ -248,6 +248,7 @@ install_docker() {
 
   # Add Docker’s official GPG key
   sudo install -m 0755 -d /etc/apt/keyrings
+  sudo rm -f /etc/apt/keyrings/docker.gpg
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
     sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   sudo chmod a+r /etc/apt/keyrings/docker.gpg

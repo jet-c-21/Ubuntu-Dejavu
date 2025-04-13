@@ -101,7 +101,7 @@ do_apt_update_and_upgrade() {
   cl_print "[*INFO*] - start `sudo apt upgrade -y` ..."
   sudo apt upgrade -y
 
-  cl_print "[*INFO*] - finish basic update \n" "green"
+  cl_print "[*INFO*] - finish basic update and upgrade \n" "green"
 }
 
 install_useful_packages() {
@@ -115,8 +115,7 @@ install_useful_packages() {
   sudo apt update
 
   # --- Core Development Tools ---
-  sudo apt install -y \
-      build-essential \              # GCC, make, libc headers, etc.
+  sudo apt install -y build-essential \
       gcc \
       g++ \
       make \
@@ -128,12 +127,10 @@ install_useful_packages() {
       pkg-config \
       software-properties-common \   # Useful for add-apt-repository
       ca-certificates \              # Needed for HTTPS downloads
-
       # --- Common system libraries and support ---
       libc6-i386 \                   # For running 32-bit apps
       libc6-x32 \
       libu2f-udev \
-
       # --- Archiving and compression tools ---
       unzip \
       unrar \
@@ -142,20 +139,15 @@ install_useful_packages() {
       tar \
       zip \
       xz-utils \
-
       # --- Disk Management ---
       gparted \
-
       # --- GUI package manager ---
       synaptic \
-
       # --- AppImage support ---
       libfuse2 \
-
       # --- File system and drive support ---
       ntfs-3g \
       exfat-fuse \
-
       # --- Network and file sharing ---
       samba-common-bin \
       net-tools \
@@ -163,7 +155,6 @@ install_useful_packages() {
       curl \
       wget \
       git \
-
       # --- Media support (full GStreamer stack) ---
       gstreamer1.0-vaapi \
       gstreamer1.0-plugins-base \
@@ -172,52 +163,41 @@ install_useful_packages() {
       gstreamer1.0-plugins-ugly \
       gstreamer1.0-libav \
       gnome-sushi \
-
       # --- Python development ---
       python3-pip \
       python3-venv \                 # Enables `python3 -m venv`
       python3-dev \                 # Headers for building Python packages
-
       # --- Terminal utilities ---
       tmux \
       tree \
       bash-completion \
       fzf \                          # Fuzzy finder
       ripgrep \                      # Fast recursive search
-
       # --- Security ---
       gnupg \
       ufw \                          # Firewall
       gufw \                         # GUI for UFW
-
       # --- System monitoring ---
       htop \
       bpytop \
       neofetch \ 
-
       # --- Personal preference utilities ---
       gnome-tweaks \
       dconf-editor \
       gnome-shell-extensions \
       gnome-shell-extension-manager \
-
       # --- Weather ---
       gnome-weather \
-
       # --- Camera ---
       gnome-snapshot \
-
       # --- Screen Recording ---
       simplescreenrecorder \
-
       # --- System cleaning utilities ---
       bleachbit \              
-
       # --- Performance speed up ---     
       preload \
-
       # --- Fonts ---
-      fonts-firacode      # make this line as the last package for the package list
+      fonts-firacode  # make this line as the last package for the package list
 }
 
 

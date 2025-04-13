@@ -187,6 +187,7 @@ disable_recent_file_history() {
 hide_home_dir_on_desktop() {
   # Hide the home directory on the desktop
   gsettings set org.gnome.desktop.background show-desktop-icons false
+  gsettings set org.gnome.shell.extensions.ding show-home false
   cl_print "[*INFO*] - Home directory hidden on desktop! \n" "green"
 }
 

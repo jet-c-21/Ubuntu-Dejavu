@@ -82,7 +82,7 @@ Name=Pomodoro Timer
 Comment=Start Pomodoro timer on login
 EOF
 
-  cl_print "[*INFO*] - gnome-shell-pomodoro auto-start enabled." "green"
+  cl_print "[*INFO*] - gnome-shell-pomodoro auto-start enabled. \n" "green"
 }
 
 install_gnome_shell_pomodoro() {
@@ -91,7 +91,7 @@ install_gnome_shell_pomodoro() {
 
   sudo apt-get install -y gnome-shell-pomodoro
 
-  cl_print "[*INFO*] - gnome-shell-pomodoro installed successfully!" "green"
+  cl_print "[*INFO*] - gnome-shell-pomodoro installed successfully! \n" "green"
 }
 
 main() {

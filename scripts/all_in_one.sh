@@ -348,7 +348,7 @@ install_gstreamer() {
   unlock_sudo
 
   # Install GStreamer and its plugins
-  sudo apt install -y gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav
+  sudo apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
 
   cl_print "[*INFO*] - Finished installing GStreamer \n"
 }
@@ -394,7 +394,11 @@ launcher_main() {
     install_useful_packages
 
     cl_print "finish install useful packages \n" "yellow"
-    sleep 600
+    sleep 5
+
+    install_gstreamer
+    cl_print "finish install gstreamer \n" "yellow"
+    sleep 5
 
     install_github_cli
     install_docker

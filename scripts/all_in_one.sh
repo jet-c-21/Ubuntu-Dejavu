@@ -167,12 +167,6 @@ install_useful_packages() {
     samba-common-bin net-tools lsb-release curl wget git
 
     # --- Media support (full GStreamer stack) ---
-    gstreamer1.0-vaapi
-    gstreamer1.0-plugins-base
-    gstreamer1.0-plugins-good
-    gstreamer1.0-plugins-bad
-    gstreamer1.0-plugins-ugly
-    gstreamer1.0-libav
     gnome-sushi
 
     # --- Python development ---
@@ -210,9 +204,9 @@ install_useful_packages() {
   )
 
   sudo apt install -y "${package_list[@]}"
+
+  cl_print "[*INFO*] - finish installing useful packages \n" "green"
 }
-
-
 
 install_github_cli () {
   cl_print "[*INFO*] - start installing github cli ..."
@@ -227,7 +221,7 @@ install_github_cli () {
 	&& sudo apt update \
 	&& sudo apt install -y gh
 
-  cl_print "[*INFO*] - finished installing github cli \n"
+  cl_print "[*INFO*] - finished installing github cli \n" "green"
 }
 
 install_docker() {
@@ -346,6 +340,17 @@ install_appimage_launcher() {
   sudo apt install -y appimagelauncher
 
   cl_print "[*INFO*] - Finished installing AppImageLauncher \n"
+}
+
+install_gstreamer() {
+  cl_print "[*INFO*] - Start installing GStreamer ..."
+
+  unlock_sudo
+
+  # Install GStreamer and its plugins
+  sudo apt install -y gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav
+
+  cl_print "[*INFO*] - Finished installing GStreamer \n"
 }
 
 install_extra_codec() {

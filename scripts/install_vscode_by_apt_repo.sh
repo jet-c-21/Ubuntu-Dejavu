@@ -82,13 +82,11 @@ install_vs_code() {
   sudo apt update
   sudo apt install -y code
 
-  cl_print "[*INFO*] - VS Code installed successfully via APT repo." "green"
+  cl_print "[*INFO*] - VS Code installed successfully via APT repo. \n" "green"
 }
 
 main() {
   install_vs_code
-
-  cl_print "[*INFO*] - vs_code has been installed successfully. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

@@ -284,7 +284,7 @@ install_obs() {
   sudo apt update
   sudo apt install -y obs-studio
 
-  cl_print "[*INFO*] - finished installing OBS Studio \n"
+  cl_print "[*INFO*] - finished installing OBS Studio \n" "green"
 }
 
 install_celluloid() {
@@ -306,12 +306,11 @@ install_celluloid() {
   # Check if Celluloid is installed successfully
   if command -v celluloid >/dev/null 2>&1; then
     cl_print "[*INFO*] - Celluloid installed successfully" "green"
+    return 0
   else
     cl_print "[*ERROR*] - Celluloid installation failed" "red"
-    exit 1
+    return 1
   fi
-
-  cl_print "[*INFO*] - Finished installing Celluloid \n" "green"
 }
 
 install_ubuntu_cleaner() {
@@ -338,20 +337,32 @@ install_telegram() {
 }
 
 install_appimage_launcher() {
-  cl_print "[*INFO*] - Start installing AppImageLauncher from daily PPA..." "cyan"
+  cl_print "[*INFO*] - Start installing AppImageLauncher via .deb ..."
 
   unlock_sudo
 
-  # Add the working PPA (daily, supports noble)
-  sudo add-apt-repository -y ppa:appimagelauncher-team/daily
+  # Get latest release URL from GitHub API
+  cl_print "[*INFO*] - Fetching latest AppImageLauncher .deb URL from GitHub..." "cyan"
+  local api_url="https://api.github.com/repos/TheAssassin/AppImageLauncher/releases/latest"
+  local download_url=$(curl -s "$api_url" | \
+    grep "browser_download_url" | \
+    grep "amd64.deb" | \
+    cut -d '"' -f 4 | \
+    head -n 1)
 
-  # Update package list
-  sudo apt update
+  if [[ -z "$download_url" ]]; then
+    cl_print "[*ERROR*] - Failed to find .deb download URL." "red"
+    return 1
+  fi
 
-  # Install AppImageLauncher
-  sudo apt install -y appimagelauncher
+  cl_print "[*INFO*] - Downloading AppImageLauncher from: $download_url" "cyan"
+  local deb_file="/tmp/$(basename "$download_url")"
+  wget -q --show-progress -O "$deb_file" "$download_url"
 
-  cl_print "[*INFO*] - Finished installing AppImageLauncher via daily PPA \n" "green"
+  cl_print "[*INFO*] - Installing AppImageLauncher .deb package..." "cyan"
+  sudo apt install -y "$deb_file"
+
+  cl_print "[*INFO*] - AppImageLauncher installed successfully via .deb" "green"
 }
 
 
@@ -403,15 +414,15 @@ launcher_main() {
     source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
     main
 
-    do_apt_update_and_upgrade
-    install_useful_packages
-    install_gstreamer
-    install_github_cli
-    install_docker
-    install_obs
-    install_celluloid
-    install_ubuntu_cleaner
-    install_telegram
+    # do_apt_update_and_upgrade
+    # install_useful_packages
+    # install_gstreamer
+    # install_github_cli
+    # install_docker
+    # install_obs
+    # install_celluloid
+    # install_ubuntu_cleaner
+    # install_telegram
     install_appimage_launcher
     install_extra_codec
 

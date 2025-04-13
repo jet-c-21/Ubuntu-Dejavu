@@ -88,42 +88,45 @@ handle_dash_to_dock_to_be_installed() {
   local extension_uuid="dash-to-dock@micxgx.gmail.com"
   local extension_dir="$HOME/.local/share/gnome-shell/extensions/$extension_uuid"
   local zip_path="/tmp/dash-to-dock.zip"
-  local extension_page="https://extensions.gnome.org/extension/307/dash-to-dock/"
+  local api_url="https://extensions.gnome.org/extension-info/"
+  local extension_id=307
+  local shell_version=$(gnome-shell --version | grep -oP '\d+\.\d+')
 
   cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
-
   if [[ -d "$extension_dir" ]]; then
     cl_print "[*INFO*] - Dash-to-Dock already exists at $extension_dir.\n" "cyan"
     return 0
   fi
 
   unlock_sudo
-  sudo apt install -y curl unzip
+  sudo apt install -y curl unzip jq
 
-  cl_print "[*INFO*] - Fetching latest download URL for Dash-to-Dock..." "cyan"
-  local download_url=$(curl -s "$extension_page" | grep -oP 'https://extensions.gnome.org/extension-data/dash-to-dock[^"]+\.zip' | head -n 1)
+  cl_print "[*INFO*] - Fetching Dash-to-Dock download URL via GNOME API..." "cyan"
+  local json=$(curl -s "https://extensions.gnome.org/extension-info/?pk=$extension_id&shell_version=$shell_version")
+  local download_url=$(echo "$json" | jq -r '.download_url')
 
-  if [[ -z "$download_url" ]]; then
-    cl_print "[*ERROR*] - Failed to find valid Dash-to-Dock download URL." "red"
+  if [[ -z "$download_url" || "$download_url" == "null" ]]; then
+    cl_print "[*ERROR*] - Failed to fetch valid .zip URL from API." "red"
     return 1
   fi
 
-  cl_print "[*INFO*] - Downloading Dash-to-Dock from $download_url..." "cyan"
-  curl -sSL -o "$zip_path" "$download_url"
+  local full_url="https://extensions.gnome.org$download_url"
+  cl_print "[*INFO*] - Downloading from: $full_url" "cyan"
+  curl -sSL -o "$zip_path" "$full_url"
 
   if [[ ! -f "$zip_path" ]] || ! unzip -t "$zip_path" &>/dev/null; then
-    cl_print "[*ERROR*] - Downloaded file is not a valid zip archive." "red"
+    cl_print "[*ERROR*] - Invalid or corrupt zip archive." "red"
     return 1
   fi
 
-  cl_print "[*INFO*] - Installing Dash-to-Dock to local extensions folder..." "cyan"
   mkdir -p "$extension_dir"
   unzip -o -q "$zip_path" -d "$extension_dir"
 
   if [[ -f "$extension_dir/metadata.json" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_dir.\n" "green"
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_dir." "green"
+    gnome-extensions enable "$extension_uuid"
   else
-    cl_print "[*ERROR*] - Dash-to-Dock installation failed (metadata.json missing)." "red"
+    cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
     return 1
   fi
 }

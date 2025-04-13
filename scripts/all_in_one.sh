@@ -102,14 +102,14 @@ change_power_to_performance_settings() {
       echo performance | sudo tee "$governor_file" > /dev/null
     fi
   done
-  cl_print "[*INFO*] - CPU governor set to performance." "green"
+  cl_print "[*INFO*] - CPU governor set to performance." "cyan"
 
   # Disable screen blanking (GNOME environment)
   cl_print "[*INFO*] - Disabling screen blanking and auto suspend..." "cyan"
   gsettings set org.gnome.desktop.session idle-delay 0
   gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0
   gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 0
-  cl_print "[*INFO*] - Screen blanking disabled." "green"
+  cl_print "[*INFO*] - Screen blanking disabled." "cyan"
 
   cl_print "[*INFO*] - Power settings adjusted to performance mode. \n" "green"
 }

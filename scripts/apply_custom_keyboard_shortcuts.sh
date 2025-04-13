@@ -91,13 +91,13 @@ add_xkill_kb_shortcut() {
   dconf write "${new_entry}command" "'xkill'"
   dconf write "${new_entry}binding" "'<Control>Escape'"
 
-  cl_print "[*INFO*] - Xkill shortcut <Ctrl+Escape> set successfully!" "green"
+  cl_print "[*INFO*] - Xkill shortcut <Ctrl+Escape> set successfully! \n" "green"
 }
 
 main() {
   add_xkill_kb_shortcut
 
-  cl_print "[*INFO*] - Custom keyboard shortcuts applied successfully." "green"
+  cl_print "[*INFO*] - Custom keyboard shortcuts applied successfully. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

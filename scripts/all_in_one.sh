@@ -470,11 +470,11 @@ launcher_main() {
     # source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
     # main
     
-    # * update gnome settings
-    source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
-    main
+    # # * update gnome settings
+    # source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
+    # main
     
-    source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh.sh"
+    source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
     main
 
     reduce_swappiness

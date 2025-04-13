@@ -157,9 +157,15 @@ hide_mount_drive_on_dock() {
 }
 
 optimize_search_settings() {
-  # how to only keep calculator and settings?
+  cl_print "[*INFO*] - Optimizing GNOME search to only include Calculator and Settings..." "cyan"
 
+  # Enable only Calculator and Settings
+  gsettings set org.gnome.desktop.search-providers disabled \
+    "['org.gnome.Characters.desktop', 'org.gnome.clocks.desktop', 'org.gnome.Nautilus.desktop', 'gnome-terminal.desktop', 'org.gnome.seahorse.Application.desktop']"
+
+  cl_print "[*INFO*] - GNOME search results now limited to Calculator and Settings." "green"
 }
+
 
 main() {
    change_appearance_color_to_dark_and_purple

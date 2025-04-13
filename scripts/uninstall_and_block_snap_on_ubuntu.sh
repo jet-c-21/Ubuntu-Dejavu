@@ -128,7 +128,7 @@ _purge_all_snap_apps_on_ubuntu_nobel_numbat() {
 
       while (( attempt <= max_attempts )); do
         if sudo snap remove --purge "$snap"; then
-          cl_print "[*INFO*] - $snap removed successfully." "green"
+          cl_print "[*INFO*] - $snap removed successfully. \n" "cyan"
           break
         else
           cl_print "[*WARN*] - Failed to remove $snap (attempt $attempt). Retrying in 5s..." "yellow"

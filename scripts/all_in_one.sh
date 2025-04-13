@@ -682,9 +682,9 @@ launcher_main() {
     source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
     main
 
-    # * install gnome extensions by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_gnome_extensions.sh"
-    main
+    # # * install gnome extensions by sub scripts
+    # source "${THIS_FILE_PARENT_DIR}/install_gnome_extensions.sh"
+    # main
 
     source "${THIS_FILE_PARENT_DIR}/organize_apps.sh"
     main

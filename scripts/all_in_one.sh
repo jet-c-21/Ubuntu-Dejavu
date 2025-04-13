@@ -98,9 +98,6 @@ do_apt_update_and_upgrade() {
   cl_print "[*INFO*] - start `sudo apt update` ..."
   sudo apt update
 
-  cl_print "[*INFO*] - start `sudo apt install` ..."
-  sudo apt install
-
   cl_print "[*INFO*] - start `sudo apt upgrade -y` ..."
   sudo apt upgrade -y
 
@@ -112,7 +109,7 @@ install_useful_packages() {
 
   # --- good package manager utilities ---
   sudo apt install -y nala
-  sudo nala fetch
+  sudo nala fetch --auto
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 
   # --- Core Development Tools ---

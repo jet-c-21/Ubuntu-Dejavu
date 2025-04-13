@@ -414,7 +414,7 @@ reduce_swappiness () {
 }
 
 prompt_reboot_notification() {
-  local reboot_countdown_sec=50
+  local reboot_countdown_sec=10
 
   if command -v zenity &>/dev/null; then
     (

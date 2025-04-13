@@ -177,6 +177,13 @@ change_dock_background_opacity() {
   cl_print "[*INFO*] - Dock background opacity set to $opacity! \n" "green"
 }
 
+change_dock_icon_size() {
+  local size="${1:-24}"  # Default to 32 if no argument passed
+
+  # Change dock icon size
+  gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size "$size"
+  cl_print "[*INFO*] - Dock icon size set to $size! \n" "green"
+}
 
 disable_recent_file_history() {
   gsettings set org.gnome.desktop.privacy remember-recent-files false

@@ -87,27 +87,33 @@ change_appearance_color_to_dark_and_purple() {
 check_dash_to_dock_is_installed() {
   local extension_id="307"
   local uuid="dash-to-dock@micxgx.gmail.com"
-  local tmp_zip="/tmp/dash-to-dock.zip"
 
   if ! gnome-extensions list | grep -q "$uuid"; then
     cl_print "[*INFO*] - Dash-to-Dock not found, installing..." "yellow"
     unlock_sudo
 
-    # Get GNOME Shell version
-    local gnome_version
-    gnome_version=$(gnome-shell --version | awk '{print $3}' | cut -d'.' -f1-2)
+    # Get GNOME Shell version (e.g., 46 or 45.2)
+    local shell_version=$(gnome-shell --version | awk '{print $3}')
 
-    # Build download URL
-    local url="https://extensions.gnome.org/extension-data/${uuid}.shell-extension.zip"
+    # Get download URL via `curl`
+    local download_url=$(curl -s "https://extensions.gnome.org/extension-info/?pk=$extension_id&shell_version=$shell_version" | jq -r '.download_url')
 
-    wget -O "$tmp_zip" "$url"
-    gnome-extensions install "$tmp_zip" --force
+    if [[ "$download_url" == "null" ]]; then
+      cl_print "[*ERROR*] - Cannot find download URL for Dash-to-Dock (ID: $extension_id) with GNOME Shell $shell_version" "red"
+      return 1
+    fi
 
-    cl_print "[*INFO*] - Dash-to-Dock extension installed successfully.\n" "green"
+    # Download and install
+    local tmp_file="/tmp/dash-to-dock.zip"
+    wget -O "$tmp_file" "https://extensions.gnome.org$download_url"
+    gnome-extensions install "$tmp_file" --force
+
+    cl_print "[*INFO*] - Dash-to-Dock extension installed successfully." "green"
   else
-    cl_print "[*INFO*] - Dash-to-Dock is already installed.\n" "cyan"
+    cl_print "[*INFO*] - Dash-to-Dock is already installed." "cyan"
   fi
 }
+
 
 
 change_dock_to_macos_style() {

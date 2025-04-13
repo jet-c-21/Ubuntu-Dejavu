@@ -197,7 +197,7 @@ main() {
    handle_dash_to_dock_to_be_installed
 
    change_dock_to_macos_style
-  #  enable_auto_hide_dock
+   enable_auto_hide_dock
    change_click_window_to_minimize_to_dock
    enable_window_hover_show
    disable_recent_file_history
@@ -205,7 +205,6 @@ main() {
    hide_mount_drive_on_dock
 
    cl_print "[*INFO*] - All personal gsettings applied successfully! \n" "green"
-   sleep 600
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

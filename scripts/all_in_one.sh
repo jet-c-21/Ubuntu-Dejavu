@@ -92,6 +92,29 @@ unlock_sudo() {
 THIS_FILE_PATH="$(realpath "${BASH_SOURCE[0]}")"
 THIS_FILE_PARENT_DIR="$(dirname "$THIS_FILE_PATH")"
 
+change_power_to_performance_settings() {
+  cl_print "[*INFO*] - Setting power mode to performance..." "cyan"
+
+  # Set CPU scaling governor to performance for all CPUs
+  for cpu in /sys/devices/system/cpu/cpu[0-9]*; do
+    governor_file="$cpu/cpufreq/scaling_governor"
+    if [ -f "$governor_file" ]; then
+      echo performance | sudo tee "$governor_file" > /dev/null
+    fi
+  done
+  cl_print "[*INFO*] - CPU governor set to performance." "green"
+
+  # Disable screen blanking (GNOME environment)
+  cl_print "[*INFO*] - Disabling screen blanking and auto suspend..." "cyan"
+  gsettings set org.gnome.desktop.session idle-delay 0
+  gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0
+  gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 0
+  cl_print "[*INFO*] - Screen blanking disabled." "green"
+
+  cl_print "[*INFO*] - Power settings adjusted to performance mode. \n" "green"
+}
+
+
 do_apt_update_and_upgrade() {
   unlock_sudo
   

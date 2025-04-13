@@ -592,7 +592,7 @@ launcher_main() {
     pin_app_to_dock "telegram.desktop"
 
     install_teamviewer_full_client_by_deb_file
-    pin_app_to_dock "teamviewer.desktop"
+    pin_app_to_dock "com.teamviewer.TeamViewer.desktop"
 
     install_anydesk
     pin_app_to_dock "anydesk.desktop"
@@ -607,7 +607,7 @@ launcher_main() {
 
     source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
     main
-    pin_brave_to_dock "brave-browser.desktop"
+    pin_app_to_dock "brave-browser.desktop"
 
     source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
     main

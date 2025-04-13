@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 0.0.3
+# version: 0.0.4
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

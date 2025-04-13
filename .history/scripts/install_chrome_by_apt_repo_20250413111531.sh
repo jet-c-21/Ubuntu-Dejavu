@@ -91,38 +91,27 @@ unlock_sudo() {
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-check_if_sublime_text_installed() {
-  if which subl >/dev/null 2>&1; then
+check_if_chrome_installed() {
+  # Use dpkg to check if chrome is installed
+  if dpkg -l | grep -q '^ii.*chrome'; then
+    cl_print "chrome is already installed." "green"
     return 0
   else
+    cl_print "chrome is not installed." "yellow"
     return 1
   fi
 }
 
 main() {
-  # Check if Firefox is installed
-  if check_if_sublime_text_installed; then
-    cl_print "Sublime Text is already installed. Exit."
+  # Check if chrome is installed
+  if check_if_chrome_installed; then
+    cl_print "chrome is already installed. Exit."
     exit 0
   fi
 
-  unlock_sudo
-
-  # 1. install GPG key
-  sudo apt install -y wget
-  wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
-
-  # 2. select stable channel to use
-  echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
-
-  # 3. install sublime-text
-  sudo apt update
-  sudo apt install -y sublime-text
-
-  cl_print "[*INFO*] - Sublime Text is installed successfully."
+  cl_print "[*INFO*] - chrome has been installed successfully. \n" "green"
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+main
 
+# 

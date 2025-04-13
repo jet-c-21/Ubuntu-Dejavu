@@ -1,6 +1,6 @@
 #!/bin/bash
+# script name: uninstall_and_block_snap_on_ubuntu.sh
 set -e
-
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # Define the colors
@@ -43,24 +43,26 @@ cl_print() {
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ask user input sudo password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-echo "[*INFO*] - Please enter your sudo password:"
-read -s user_input_password
+# Define a global SUDO_PASSWORD if not already set
+if [[ -z "${SUDO_PASSWORD}" ]]; then
+    echo -n "[*INFO*] - Please enter your sudo password: "
+    read -s user_input_password
+    echo
 
-verify_password() {
-  # Function to verify the sudo password
-  local password=$1
-  echo $password | sudo -S true 2>/dev/null
-  return $?
-}
+    verify_password() {
+        local password=$1
+        echo "$password" | sudo -S -v &>/dev/null
+        return $?
+    }
 
-# Verify the password and assign it to the global variable SUDO_PWD
-SUDO_PASSWORD=""
-if verify_password "$user_input_password"; then
-  SUDO_PASSWORD=$user_input_password
-#   echo "Password is correct. Assigned to SUDO_PASSWORD variable."
-else
-  echo "[*ERROR*] - Incorrect password." >&2
-  exit 1
+    if verify_password "$user_input_password"; then
+        export SUDO_PASSWORD="$user_input_password"
+        # You may also refresh the timestamp so future sudo doesn't ask again
+        echo "$SUDO_PASSWORD" | sudo -S -v &>/dev/null
+    else
+        echo "[*ERROR*] - Incorrect password." >&2
+        exit 1
+    fi
 fi
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ask user input sudo password <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -89,8 +91,36 @@ unlock_sudo() {
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+_purge_all_snap_apps_ubuntu_nobel_numbat() {
+  cl_print "[*INFO*] - Start purging default Snap apps on Ubuntu 24.04 Noble Numbat..."
+
+  # List of snaps to remove in the proper order
+  local snaps_to_remove=(
+    "firefox"
+    "snap-store"
+    "firmware-updater"
+    "canonical-livepatch"
+    "snapd-desktop-integration"
+    "gtk-common-themes"
+    "gnome-42-2204"
+    "core22"
+    "bare"
+  )
+
+  for snap in "${snaps_to_remove[@]}"; do
+    if snap list | grep -q "^$snap\b"; then
+      cl_print "[*INFO*] - Removing $snap ..."
+      use_sudo snap remove -y --purge "$snap"
+    else
+      cl_print "[*INFO*] - $snap is not installed, skipping." "yellow"
+    fi
+  done
+
+  cl_print "[*INFO*] - All default Snap packages have been purged." "green"
+}
+
 purge_all_snap_apps() {
-  cl_print "[*INFO*] - this function have not been implemented yet, for safety, please manually uninstall all snap apps."
+  _purge_all_snap_apps_ubuntu_nobel_numbat
 
   # Check if there are any Snap apps installed
   if snap list | grep -q -v "^Name"; then
@@ -180,6 +210,23 @@ install_gnome_software() {
   cl_print "[*INFO*] - gnome-software is installed."
 }
 
+install_gdebi() {
+  cl_print "[*INFO*] - install gdebi ..." "cyan"
+  unlock_sudo
+  sudo apt install -y gdebi-core gdebi
+
+  cl_print "[*INFO*] - gdebi is installed." "green"
+
+  # Optional: Set gdebi as the default app for .deb files
+  if command -v xdg-mime &>/dev/null; then
+    cl_print "[*INFO*] - setting gdebi-gtk as default handler for .deb files ..." "cyan"
+    xdg-mime default gdebi.desktop application/vnd.debian.binary-package
+    cl_print "[*INFO*] - gdebi-gtk is now the default for .deb files." "green"
+  else
+    cl_print "[*WARN*] - xdg-mime not found. Cannot set file association." "yellow"
+  fi
+}
+
 main() {
   purge_all_snap_apps
   disable_snapd_service
@@ -188,8 +235,11 @@ main() {
   delete_snap_related_files
   create_nosnap_pref_for_apt
   install_gnome_software
+  install_gdebi
 
   cl_print "[*INFO*] - All done. Snap is uninstalled and blocked on your system." "green"
 }
 
-main
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

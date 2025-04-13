@@ -452,23 +452,23 @@ launcher_main() {
     # source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
     # main
 
-    # * install useful apps by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
-    main
+    # # * install useful apps by sub scripts
+    # source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
+    # main
 
-    source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
+    # main
 
-    # * install productivity tools by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
-    main
+    # # * install productivity tools by sub scripts
+    # source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
+    # main
 
-    # * install flatpak and flathub apps by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
-    main
+    # # * install flatpak and flathub apps by sub scripts
+    # source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
+    # main
 
-    source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
+    # main
     
     # * update gnome settings
     source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"

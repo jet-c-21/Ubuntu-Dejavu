@@ -75,19 +75,37 @@ unlock_sudo() {
 
 
 add_xkill_kb_shortcut() {
-  # Define shortcut name and command
-  local shortcut_name="Xkill"
+  local name="Xkill"
   local command="xkill"
-  local key_combination="Ctrl+Escape"
+  local binding="<Control>Escape"
+  local key_path="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
 
-  # Add Xkill as a custom shortcut using gsettings
-  cl_print "[*INFO*] - Adding custom keyboard shortcut for Xkill..."
+  cl_print "[*INFO*] - Adding custom keyboard shortcut for Xkill..." "cyan"
 
-  # Use gsettings to create a custom shortcut (using GNOME's custom keybindings)
-  gnome-control-center keyboard shortcuts add "$key_combination" "$command"
+  # Get current custom keybindings
+  local current_list
+  current_list=$(gsettings get org.gnome.settings-daemon.plugins.media-keys custom-keybindings)
 
-  cl_print "[*INFO*] - Keyboard shortcut $key_combination for Xkill added successfully." "green"
+  # Set new keybinding index
+  local new_binding="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+  if [[ "$current_list" != *"$new_binding"* ]]; then
+    # Add to list
+    if [[ "$current_list" == "@as []" ]]; then
+      gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['$new_binding']"
+    else
+      updated_list=$(echo "$current_list" | sed "s/]$/, '$new_binding']/")
+      gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "$updated_list"
+    fi
+  fi
+
+  # Set name, command, and binding
+  gsettings set "${key_path}/custom0/" name "$name"
+  gsettings set "${key_path}/custom0/" command "$command"
+  gsettings set "${key_path}/custom0/" binding "$binding"
+
+  cl_print "[*INFO*] - Shortcut <Ctrl>+Escape for Xkill added successfully." "green"
 }
+
 
 
 main() {

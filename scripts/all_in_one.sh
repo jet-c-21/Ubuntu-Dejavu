@@ -109,11 +109,11 @@ install_useful_packages() {
 
   # --- good package manager utilities ---
   sudo apt install -y nala
-  sudo nala fetch --auto
+  sudo nala fetch --auto -y
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 
   sudo apt update
-  
+
   # --- Core Development Tools ---
   sudo apt install -y \
       build-essential \              # GCC, make, libc headers, etc.

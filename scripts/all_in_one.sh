@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 0.0.2
+# version: 0.0.3
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -132,7 +132,7 @@ install_useful_packages() {
 
   # --- good package manager utilities ---
   sudo apt install -y nala
-  # sudo nala fetch --auto -y
+  sudo nala fetch --auto -y
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 
   sudo apt update
@@ -433,11 +433,13 @@ prompt_reboot_notification() {
           --title="Ubuntu Dejavu" \
           --text="System will reboot in $i second(s)...\n\nPress Ctrl+C to cancel in terminal."
       done
+      unlock_sudo
       sudo reboot
     ) &
   else
-    cl_print "[*WARN*] - 'zenity' not installed. Falling back to silent countdown." "red"
+    cl_print "[*WARN*] - 'zenity' not installed. Falling back to silent countdown." "yellow"
     sleep "$reboot_countdown_sec"
+    unlock_sudo
     sudo reboot
   fi
 }
@@ -506,8 +508,6 @@ launcher_main() {
     main
 
     reduce_swappiness
-
-    unlock_sudo
     
     prompt_reboot_notification
 

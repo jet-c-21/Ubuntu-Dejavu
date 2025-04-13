@@ -262,11 +262,11 @@ install_pipx() {
 
   # Refresh shell environment to apply PATH changes immediately
   if [ -n "$ZSH_VERSION" ]; then
-    exec zsh
+    source ~/.zshrc
   elif [ -n "$BASH_VERSION" ]; then
-    exec bash
+    source ~/.bashrc
   else
-    exec $SHELL
+    hash -r  # refresh PATH without restarting shell
   fi
 }
 

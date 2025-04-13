@@ -84,15 +84,31 @@ change_appearance_color_to_dark_and_purple() {
 }
 
 
-# Check if Dash-to-Dock extension is installed
 check_dash_to_dock_is_installed() {
-  if ! gnome-extensions list | grep -q 'dash-to-dock'; then
-    cl_print "[*INFO*] - Dash-to-Dock extension is not installed. Installing..." "yellow"
+  local extension_id="307"
+  local uuid="dash-to-dock@micxgx.gmail.com"
+  local tmp_zip="/tmp/dash-to-dock.zip"
+
+  if ! gnome-extensions list | grep -q "$uuid"; then
+    cl_print "[*INFO*] - Dash-to-Dock not found, installing..." "yellow"
     unlock_sudo
-    sudo gnome-extensions install 307 # https://extensions.gnome.org/extension/307/dash-to-dock/
-    cl_print "[*INFO*] - Dash-to-Dock extension installed. \n" "green"
+
+    # Get GNOME Shell version
+    local gnome_version
+    gnome_version=$(gnome-shell --version | awk '{print $3}' | cut -d'.' -f1-2)
+
+    # Build download URL
+    local url="https://extensions.gnome.org/extension-data/${uuid}.shell-extension.zip"
+
+    wget -O "$tmp_zip" "$url"
+    gnome-extensions install "$tmp_zip" --force
+
+    cl_print "[*INFO*] - Dash-to-Dock extension installed successfully.\n" "green"
+  else
+    cl_print "[*INFO*] - Dash-to-Dock is already installed.\n" "cyan"
   fi
 }
+
 
 change_dock_to_macos_style() {
   cl_print "[*INFO*] - Changing dock to macOS style..." "cyan"

@@ -120,7 +120,7 @@ main() {
   install_discord_apt
   enable_discord_auto_update
   
-  cl_print "[*INFO*] - Installation and auto-update setup completed." "green"
+  cl_print "[*INFO*] - Discord Installation and auto-update setup completed. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

@@ -85,40 +85,49 @@ change_appearance_color_to_dark_and_purple() {
 
 
 handle_dash_to_dock_to_be_installed() {
-  local extension_id="dash-to-dock@micxgx.gmail.com"
-  local extension_path="$HOME/.local/share/gnome-shell/extensions/$extension_id"
-  local zip_file="/tmp/dash-to-dock.zip"
-  local extension_url="https://extensions.gnome.org/extension-data/${extension_id}.shell-extension.zip"
+  local extension_uuid="dash-to-dock@micxgx.gmail.com"
+  local extension_dir="$HOME/.local/share/gnome-shell/extensions/$extension_uuid"
+  local zip_path="/tmp/dash-to-dock.zip"
+  local extension_page="https://extensions.gnome.org/extension/307/dash-to-dock/"
 
   cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
 
-  if [[ -d "$extension_path" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock already exists in $extension_path. \n" "cyan"
+  if [[ -d "$extension_dir" ]]; then
+    cl_print "[*INFO*] - Dash-to-Dock already exists at $extension_dir.\n" "cyan"
     return 0
   fi
 
   unlock_sudo
   sudo apt install -y curl unzip
 
-  cl_print "[*INFO*] - Downloading Dash-to-Dock from GNOME Extensions..." "cyan"
-  curl -sSL -o "$zip_file" "$extension_url"
+  cl_print "[*INFO*] - Fetching latest download URL for Dash-to-Dock..." "cyan"
+  local download_url=$(curl -s "$extension_page" | grep -oP 'https://extensions.gnome.org/extension-data/dash-to-dock[^"]+\.zip' | head -n 1)
 
-  if [[ ! -f "$zip_file" ]] || ! unzip -t "$zip_file" &>/dev/null; then
-    cl_print "[*ERROR*] - Failed to download or validate Dash-to-Dock zip." "red"
+  if [[ -z "$download_url" ]]; then
+    cl_print "[*ERROR*] - Failed to find valid Dash-to-Dock download URL." "red"
+    return 1
+  fi
+
+  cl_print "[*INFO*] - Downloading Dash-to-Dock from $download_url..." "cyan"
+  curl -sSL -o "$zip_path" "$download_url"
+
+  if [[ ! -f "$zip_path" ]] || ! unzip -t "$zip_path" &>/dev/null; then
+    cl_print "[*ERROR*] - Downloaded file is not a valid zip archive." "red"
     return 1
   fi
 
   cl_print "[*INFO*] - Installing Dash-to-Dock to local extensions folder..." "cyan"
-  mkdir -p "$extension_path"
-  unzip -o -q "$zip_file" -d "$extension_path"
+  mkdir -p "$extension_dir"
+  unzip -o -q "$zip_path" -d "$extension_dir"
 
-  if [[ -f "$extension_path/metadata.json" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path. \n" "cyan"
+  if [[ -f "$extension_dir/metadata.json" ]]; then
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_dir.\n" "green"
   else
-    cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
+    cl_print "[*ERROR*] - Dash-to-Dock installation failed (metadata.json missing)." "red"
     return 1
   fi
 }
+
 
 
 change_dock_to_macos_style() {

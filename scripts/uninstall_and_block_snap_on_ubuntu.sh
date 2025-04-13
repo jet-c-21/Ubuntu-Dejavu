@@ -125,15 +125,20 @@ _purge_all_snap_apps_on_ubuntu_nobel_numbat() {
 purge_all_snap_apps() {
   _purge_all_snap_apps_on_ubuntu_nobel_numbat
 
-  # Check if there are any Snap apps installed
-  if snap list | grep -q -v "^Name"; then
-    cl_print "[*WARN*] - some Snap apps are still installed. Please remove them manually."
-    return 1  # Exit with code 1 to indicate Snap apps are present
-  else
+  # Check how many Snap packages are installed (excluding the header line)
+  # in normal case snap list should be empty or only contain snapd
+  local snap_count
+  snap_count=$(snap list | awk 'NR>1 {print $1}' | grep -v '^snapd$' | wc -l)
+
+  if [[ "$snap_count" -eq 0 ]]; then
     cl_print "[*INFO*] - No Snap apps detected. great! :)" "green"
-    return 0  # Exit with code 0 to indicate success
+    return 0
+  else
+    cl_print "[*WARN*] - Some Snap apps are still installed (excluding snapd). Please remove them manually." "red"
+    return 1
   fi
 }
+
 
 disable_snapd_service() {
   cl_print "[*INFO*] - disable snapd service ..."

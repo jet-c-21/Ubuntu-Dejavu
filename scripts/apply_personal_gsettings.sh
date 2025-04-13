@@ -93,7 +93,7 @@ handle_dash_to_dock_to_be_installed() {
   cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
 
   if [[ -d "$extension_path" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock already exists in $extension_path." "green"
+    cl_print "[*INFO*] - Dash-to-Dock already exists in $extension_path. \n" "cyan"
     return 0
   fi
 
@@ -110,16 +110,12 @@ handle_dash_to_dock_to_be_installed() {
   unzip -o -q "$zip_file" -d "$extension_path"
 
   if [[ -f "$extension_path/metadata.json" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path." "green"
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path. \n" "cyan"
   else
     cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
     return 1
   fi
 }
-
-
-
-
 
 
 change_dock_to_macos_style() {

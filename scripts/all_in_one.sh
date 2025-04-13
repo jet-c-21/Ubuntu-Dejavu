@@ -147,7 +147,7 @@ install_useful_packages() {
       gparted \
 
       # --- GUI package manager ---
-      synaptic
+      synaptic \
 
       # --- AppImage support ---
       libfuse2 \
@@ -217,8 +217,9 @@ install_useful_packages() {
       preload \
 
       # --- Fonts ---
-      fonts-firacode                # Keep this line at the end of the list
+      fonts-firacode      # make this line as the last package for the package list
 }
+
 
 install_github_cli () {
   cl_print "[*INFO*] - start installing github cli ..."

@@ -85,45 +85,38 @@ change_appearance_color_to_dark_and_purple() {
 
 
 handle_dash_to_dock_to_be_installed() {
-  cl_print "[*INFO*] - Checking Dash-to-Dock status..." "cyan"
+  local extension_id="dash-to-dock@micxgx.gmail.com"
+  local extension_path="$HOME/.local/share/gnome-shell/extensions/$extension_id"
+  local zip_file="/tmp/dash-to-dock.zip"
+  local extension_url="https://extensions.gnome.org/extension-data/${extension_id}.shell-extension.zip"
 
-  local EXT_ID="dash-to-dock@micxgx.gmail.com"
-  local EXT_PATH="$HOME/.local/share/gnome-shell/extensions/$EXT_ID"
+  cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
 
-  # Disable built-in Ubuntu Dock
-  if gnome-extensions list | grep -q "ubuntu-dock@ubuntu.com"; then
-    cl_print "[*INFO*] - Disabling default Ubuntu Dock..." "yellow"
-    gnome-extensions disable ubuntu-dock@ubuntu.com
+  if [[ -d "$extension_path" ]]; then
+    cl_print "[*INFO*] - Dash-to-Dock already exists in $extension_path." "green"
+    return 0
   fi
 
-  # Check if dash-to-dock is already installed
-  if gnome-extensions list | grep -q "$EXT_ID"; then
-    cl_print "[*INFO*] - Dash-to-Dock is already installed." "green"
-    return
+  cl_print "[*INFO*] - Downloading Dash-to-Dock from GNOME Extensions..." "cyan"
+  curl -sSL -o "$zip_file" "$extension_url"
+
+  if [[ ! -f "$zip_file" ]] || ! unzip -t "$zip_file" &>/dev/null; then
+    cl_print "[*ERROR*] - Failed to download or validate Dash-to-Dock zip." "red"
+    return 1
   fi
-
-  # Install prerequisites
-  unlock_sudo
-  sudo apt install -y unzip wget
-
-  # Download latest zip from GNOME Extensions
-  local TMP_DIR="/tmp/dash-to-dock-install"
-  mkdir -p "$TMP_DIR"
-  local ZIP_URL="https://extensions.gnome.org/extension-data/dash-to-dockmicxgx.gmail.com.v81.shell-extension.zip"
-  local ZIP_FILE="$TMP_DIR/dash-to-dock.zip"
-
-  cl_print "[*INFO*] - Downloading Dash-to-Dock extension..." "cyan"
-  wget -O "$ZIP_FILE" "$ZIP_URL"
 
   cl_print "[*INFO*] - Installing Dash-to-Dock to local extensions folder..." "cyan"
-  mkdir -p "$EXT_PATH"
-  unzip -q "$ZIP_FILE" -d "$EXT_PATH"
+  mkdir -p "$extension_path"
+  unzip -o -q "$zip_file" -d "$extension_path"
 
-  # Enable the extension
-  gnome-extensions enable "$EXT_ID"
-
-  cl_print "[*INFO*] - Dash-to-Dock has been installed and enabled." "green"
+  if [[ -f "$extension_path/metadata.json" ]]; then
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path." "green"
+  else
+    cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
+    return 1
+  fi
 }
+
 
 
 

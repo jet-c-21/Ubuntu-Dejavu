@@ -440,27 +440,41 @@ install_teamviewer_full_client_by_deb_file() {
 }
 
 install_teamviewer_full_client() {
-  cl_print "[*INFO*] - Start installing TeamViewer Full Client ..."
+  cl_print "[*INFO*] - Start installing TeamViewer Full Client ..." "cyan"
 
   unlock_sudo
 
-    # 1. Import TeamViewer public key
-  wget -O - https://download.teamviewer.com/download/linux/signature/TeamViewer2017.asc | \
-    sudo gpg --dearmor -o /usr/share/keyrings/teamviewer-archive-keyring.gpg
+  # Check if already installed
+  if command -v teamviewer &>/dev/null; then
+    cl_print "[*INFO*] - TeamViewer is already installed." "yellow"
+    return 0
+  fi
 
-  # 2. Add TeamViewer's APT repository
+  # 1. Import TeamViewer public key
+  cl_print "[*INFO*] - Importing TeamViewer GPG key..." "blue"
+  if ! wget -qO- https://download.teamviewer.com/download/linux/signature/TeamViewer2017.asc | \
+    gpg --dearmor | sudo tee /usr/share/keyrings/teamviewer-archive-keyring.gpg > /dev/null; then
+    cl_print "[*ERROR*] - Failed to download or import GPG key." "red"
+    return 1
+  fi
+
+  # 2. Add TeamViewer APT repository
+  cl_print "[*INFO*] - Adding TeamViewer APT repository..." "blue"
   echo "deb [signed-by=/usr/share/keyrings/teamviewer-archive-keyring.gpg] \
-  https://linux.teamviewer.com/deb stable main" | \
+https://linux.teamviewer.com/deb stable main" | \
     sudo tee /etc/apt/sources.list.d/teamviewer.list > /dev/null
 
-  # 3. Update package list
-  sudo apt update
+  # 3. Update APT
+  cl_print "[*INFO*] - Updating package list..." "blue"
+  sudo apt update -y
 
-  # 4. Install TeamViewer full client
+  # 4. Install TeamViewer
+  cl_print "[*INFO*] - Installing TeamViewer package..." "blue"
   sudo apt install -y teamviewer
 
-  cl_print "[*INFO*] - Finished installing TeamViewer \n" "green"
+  cl_print "[*DONE*] - TeamViewer Full Client installed successfully." "green"
 }
+
 
 install_anydesk() {
   cl_print "[*INFO*] - Start installing AnyDesk ..."

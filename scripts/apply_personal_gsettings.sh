@@ -139,6 +139,7 @@ change_dock_to_macos_style() {
   # gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'LEFT'
   gsettings set org.gnome.shell.extensions.dash-to-dock show-apps-at-top true
   gsettings set org.gnome.shell.extensions.dash-to-dock icon-size-fixed false
+  gsettings set org.gnome.shell.extensions.dash-to-dock multi-monitor true
 
   cl_print "[*INFO*] - Dock successfully changed to macOS style." "green"
 }

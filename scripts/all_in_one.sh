@@ -401,7 +401,80 @@ install_appimage_launcher() {
   cl_print "[*INFO*] - AppImageLauncher installed successfully via .deb \n" "green"
 }
 
+install_teamviewer_full_client_by_deb_file() {
+  cl_print "[*INFO*] - Installing TeamViewer Full Client..." "blue"
 
+  # Check if already installed
+  if command -v teamviewer &>/dev/null; then
+    cl_print "[*INFO*] - TeamViewer is already installed." "yellow"
+    return 0
+  fi
+
+  # Download the latest .deb
+  local url="https://download.teamviewer.com/download/linux/teamviewer_amd64.deb"
+  local tmp_deb="/tmp/teamviewer_amd64.deb"
+
+  cl_print "[*INFO*] - Downloading TeamViewer package..." "cyan"
+  wget -q --show-progress -O "$tmp_deb" "$url"
+
+  unlock_sudo
+  cl_print "[*INFO*] - Installing the .deb package..." "cyan"
+  sudo apt update -y
+  sudo apt install -y "$tmp_deb" || {
+    cl_print "[*WARN*] - Dependency issues detected. Attempting fix..." "yellow"
+    sudo apt install -f -y
+  }
+
+  rm -f "$tmp_deb"
+  cl_print "[*DONE*] - TeamViewer installation completed. \n" "green"
+}
+
+install_teamviewer_full_client() {
+  cl_print "[*INFO*] - Start installing TeamViewer Full Client ..."
+
+  unlock_sudo
+
+    # 1. Import TeamViewer public key
+  wget -O - https://download.teamviewer.com/download/linux/signature/TeamViewer2017.asc | \
+    sudo gpg --dearmor -o /usr/share/keyrings/teamviewer-archive-keyring.gpg
+
+  # 2. Add TeamViewer's APT repository
+  echo "deb [signed-by=/usr/share/keyrings/teamviewer-archive-keyring.gpg] \
+  https://linux.teamviewer.com/deb stable main" | \
+    sudo tee /etc/apt/sources.list.d/teamviewer.list > /dev/null
+
+  # 3. Update package list
+  sudo apt update
+
+  # 4. Install TeamViewer full client
+  sudo apt install -y teamviewer
+
+  cl_print "[*INFO*] - Finished installing TeamViewer \n" "green"
+}
+
+install_anydesk() {
+  cl_print "[*INFO*] - Start installing AnyDesk ..."
+
+  unlock_sudo
+
+  # Add the AnyDesk GPG key
+  sudo apt update
+  sudo apt install -y ca-certificates curl apt-transport-https
+  sudo install -m 0755 -d /etc/apt/keyrings
+  
+  sudo rm -f /etc/apt/keyrings/keys.anydesk.com.asc
+  sudo curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY -o /etc/apt/keyrings/keys.anydesk.com.asc
+  sudo chmod a+r /etc/apt/keyrings/keys.anydesk.com.asc
+
+  # Add the AnyDesk apt repository
+  echo "deb [signed-by=/etc/apt/keyrings/keys.anydesk.com.asc] https://deb.anydesk.com all main" | sudo tee /etc/apt/sources.list.d/anydesk-stable.list > /dev/null
+
+  # Update apt caches and install the AnyDesk client
+  sudo apt update
+  sudo apt install -y anydesk
+
+  cl_print "[*INFO*] - Finished installing AnyDesk \n" "green"
+}
 
 install_gstreamer() {
   cl_print "[*INFO*] - Start installing GStreamer ..."
@@ -494,6 +567,12 @@ launcher_main() {
     install_telegram
     pin_app_to_dock "telegram.desktop"
 
+    install_teamviewer_full_client
+    pin_app_to_dock "teamviewer.desktop"
+
+    install_anydesk
+    pin_app_to_dock "anydesk.desktop"
+
     install_appimage_launcher
     install_extra_codec
 
@@ -538,6 +617,7 @@ launcher_main() {
 
     source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
     main
+    pin_app_to_dock "com.bitwarden.desktop"
     
     # * update gnome settings
     source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"

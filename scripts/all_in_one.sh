@@ -109,7 +109,7 @@ install_useful_packages() {
 
   # --- good package manager utilities ---
   sudo apt install -y nala
-  sudo nala fetch --auto -y
+  # sudo nala fetch --auto -y
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 
   sudo apt update

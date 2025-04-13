@@ -487,9 +487,9 @@ launcher_main() {
     # source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
     # main
 
-    # # * install productivity tools by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
-    # main
+    # * install productivity tools by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
+    main
 
     # # * install flatpak and flathub apps by sub scripts
     # source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"

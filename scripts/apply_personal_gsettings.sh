@@ -165,9 +165,9 @@ enable_window_hover_show() {
 
 disable_recent_file_history() {
   gsettings set org.gnome.desktop.privacy remember-recent-files false
-  gsettings set org.gnome.desktop.applications.recency false
   cl_print "[*INFO*] - Recent file history disabled! \n" "green"
 }
+
 
 hide_home_dir_on_desktop() {
   # Hide the home directory on the desktop

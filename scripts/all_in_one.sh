@@ -258,7 +258,7 @@ install_pipx() {
   pipx ensurepath
   
   # Optional: Enable global path usage for sudo/system scripts
-  sudo pipx ensurepath --global
+  sudo pipx ensurepath
 
   # Refresh shell environment to apply PATH changes immediately
   if [ -n "$ZSH_VERSION" ]; then

@@ -429,7 +429,7 @@ prompt_reboot_notification() {
            --text="Preparing to reboot..." \
            --percentage=0 \
            --auto-close \
-           --no-cancel || {
+           --no-cancel 2>/dev/null || {
              cl_print "[*WARN*] - Zenity failed to display. Falling back to terminal countdown." "yellow"
              sleep "$reboot_countdown_sec"
            }
@@ -444,6 +444,7 @@ prompt_reboot_notification() {
     sudo reboot
   fi
 }
+
 
 
 

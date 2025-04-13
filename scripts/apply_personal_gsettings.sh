@@ -85,15 +85,13 @@ change_appearance_color_to_dark_and_purple() {
 
 
 handle_dash_to_dock_to_be_installed() {
-  local extension_uuid="dash-to-dock@micxgx.gmail.com"
-  local extension_path="$HOME/.local/share/gnome-shell/extensions/$extension_uuid"
+  local extension_id="dash-to-dock@micxgx.gmail.com"
+  local extension_path="$HOME/.local/share/gnome-shell/extensions/$extension_id"
   local zip_file="/tmp/dash-to-dock.zip"
-  local metadata_api_url="https://extensions.gnome.org/extension-info/?uuid=${extension_uuid}&shell_version=$(gnome-shell --version | grep -oP '[0-9]+\.[0-9]+')"
-  
-  cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
 
+  cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
   if [[ -d "$extension_path" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock already exists at $extension_path. \n" "cyan"
+    cl_print "[*INFO*] - Dash-to-Dock already exists at $extension_path." "green"
     return 0
   fi
 
@@ -101,15 +99,16 @@ handle_dash_to_dock_to_be_installed() {
   sudo apt install -y curl unzip jq
 
   cl_print "[*INFO*] - Fetching Dash-to-Dock download URL via GNOME API..." "cyan"
+  local api_url="https://extensions.gnome.org/extension-info/?uuid=${extension_id}&shell_version=$(gnome-shell --version | grep -oP '\d+\.\d+')"
   local download_url
-  download_url=$(curl -s "$metadata_api_url" | jq -r '.download_url')
+  download_url=$(curl -s "$api_url" | jq -r '.download_url')
 
   if [[ -z "$download_url" || "$download_url" == "null" ]]; then
     cl_print "[*ERROR*] - Failed to find valid Dash-to-Dock download URL." "red"
     return 1
   fi
 
-  local full_url="https://extensions.gnome.org$download_url"
+  local full_url="https://extensions.gnome.org${download_url}"
   cl_print "[*INFO*] - Downloading from: $full_url" "cyan"
   curl -sSL -o "$zip_file" "$full_url"
 
@@ -123,23 +122,24 @@ handle_dash_to_dock_to_be_installed() {
   unzip -o -q "$zip_file" -d "$extension_path"
 
   if [[ -f "$extension_path/metadata.json" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path. \n" "cyan"
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path." "green"
   else
     cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
     return 1
   fi
 
-  # Wait briefly and try enabling the extension
-  sleep 2
+  cl_print "[*WARN*] - Installed but not yet recognized by GNOME Shell." "yellow"
 
-  if gnome-extensions list | grep -q "$extension_uuid"; then
-    gnome-extensions enable "$extension_uuid"
-    cl_print "[*INFO*] - Dash-to-Dock extension enabled." "green"
+  if [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
+    cl_print "[*TIP*] - Press Alt+F2, then type 'r' and press Enter to reload GNOME Shell." "yellow"
+    cl_print "[*TIP*] - Or run this in a terminal (not GNOME Terminal):" "yellow"
+    echo -e "\n  nohup gnome-shell --replace > /dev/null 2>&1 &\n"
+    cl_print "[*WARN*] - WARNING: Use a standalone terminal like Alacritty or switch to TTY to avoid losing your session." "red"
   else
-    cl_print "[*WARN*] - Installed but not yet recognized by GNOME Shell." "yellow"
-    cl_print "[*TIP*] - Try restarting GNOME Shell (Alt+F2, then type 'r') or log out and back in." "yellow"
+    cl_print "[*TIP*] - You're on Wayland. Please log out and back in to enable the extension." "yellow"
   fi
 }
+
 
 
 

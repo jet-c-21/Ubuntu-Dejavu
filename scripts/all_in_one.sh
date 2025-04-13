@@ -380,6 +380,8 @@ reduce_swappiness () {
 launcher_main() {
     cl_print "[*INFO*] - start running UBUNTU DEJAVU all in one launcher ..."
     
+    change_power_to_performance_settings
+
     source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
     main
 

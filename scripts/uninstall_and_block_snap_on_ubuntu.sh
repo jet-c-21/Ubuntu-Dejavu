@@ -146,7 +146,7 @@ disable_snapd_service() {
   sudo systemctl stop snapd
   sudo systemctl disable snapd
   sudo systemctl mask snapd
-  cl_print "[*INFO*] snapd is disabled and masked."
+  cl_print "[*INFO*] snapd is disabled and masked. \n" "green"
 }
 
 purge_snapd() {
@@ -154,14 +154,14 @@ purge_snapd() {
   unlock_sudo
   sudo apt purge -y snapd
   sudo apt autoremove -y
-  cl_print "[*INFO*] snapd is purged."
+  cl_print "[*INFO*] snapd is purged. \n" "green"
 }
 
 prevent_snapd_upgrade() {
   cl_print "[*INFO*] - prevent snapd from being upgraded ..."
   unlock_sudo
   sudo apt-mark hold snapd
-  cl_print "[*INFO*] snapd is held from upgrade."
+  cl_print "[*INFO*] snapd is held from upgrade. \n" "green"
 }
 
 delete_snap_related_files() {
@@ -174,7 +174,7 @@ delete_snap_related_files() {
   sudo rm -rf /var/snap
   sudo rm -rf /var/lib/snapd
 
-  cl_print "[*INFO*] snapd related files are deleted."
+  cl_print "[*INFO*] snapd related files are deleted. \n" "green"
 }
 
 create_nosnap_pref_for_apt() {
@@ -208,14 +208,14 @@ EOF"
   fi
 
   sudo apt update
-  cl_print "[*INFO*] - finish to create nosnap preference for apt."
+  cl_print "[*INFO*] - finish to create nosnap preference for apt. \n" "green"
 }
 
 install_gnome_software() {
   cl_print "[*INFO*] - install gnome-software ..."
   unlock_sudo
   sudo apt install -y gnome-software
-  cl_print "[*INFO*] - gnome-software is installed."
+  cl_print "[*INFO*] - gnome-software is installed. \n" "green"
 }
 
 install_gdebi() {

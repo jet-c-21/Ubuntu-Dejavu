@@ -112,7 +112,7 @@ _purge_all_snap_apps_on_ubuntu_nobel_numbat() {
   for snap in "${snaps_to_remove[@]}"; do
     if snap list | grep -q "^$snap\b"; then
       cl_print "[*INFO*] - Removing $snap ..."
-      sudo snap remove -y --purge "$snap"
+      sudo snap remove --purge "$snap"
     else
       cl_print "[*INFO*] - $snap is not installed, skipping." "yellow"
     fi

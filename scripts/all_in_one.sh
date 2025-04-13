@@ -112,6 +112,8 @@ install_useful_packages() {
   sudo nala fetch --auto
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 
+  sudo apt update
+  
   # --- Core Development Tools ---
   sudo apt install -y \
       build-essential \              # GCC, make, libc headers, etc.

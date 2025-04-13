@@ -75,7 +75,7 @@ install_apps_on_flathub() {
 }
 
 main() {
-  install_flatpak
+  install_apps_on_flathub
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

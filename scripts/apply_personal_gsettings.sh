@@ -135,7 +135,8 @@ change_dock_to_macos_style() {
 
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
   gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+  # gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'LEFT'
   gsettings set org.gnome.shell.extensions.dash-to-dock show-apps-at-top true
   gsettings set org.gnome.shell.extensions.dash-to-dock icon-size-fixed false
 
@@ -181,6 +182,12 @@ hide_mount_drive_on_dock() {
   cl_print "[*INFO*] - Mount drive hidden on dock! \n" "green"
 }
 
+hide_trashcan_on_dock() {
+  # Hide the trashcan on the dock
+  gsettings set org.gnome.shell.extensions.dash-to-dock show-trash false
+  cl_print "[*INFO*] - Trashcan hidden on dock! \n" "green"
+}
+
 optimize_search_settings() {
   cl_print "[*INFO*] - Optimizing GNOME search to only include Calculator and Settings..." "cyan"
 
@@ -203,6 +210,7 @@ main() {
    disable_recent_file_history
    hide_home_dir_on_desktop
    hide_mount_drive_on_dock
+   hide_trashcan_on_dock
 
    cl_print "[*INFO*] - All personal gsettings applied successfully! \n" "green"
 }

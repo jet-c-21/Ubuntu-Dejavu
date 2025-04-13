@@ -411,8 +411,8 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    # main
 
     # do_apt_update_and_upgrade
     # install_useful_packages

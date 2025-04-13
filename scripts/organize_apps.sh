@@ -67,16 +67,25 @@ unlock_sudo() {
 create_config_tool_apps_dir() {
   local folder_id="config-tools"
   local folder_name="'Config Tools'"
-  local apps_to_add=('org.gnome.tweaks.desktop' 'dconf-editor.desktop' 'org.gnome.Extensions.desktop' 'com.mattjakeman.ExtensionManager.desktop')
+  local apps_to_add=(
+    'org.gnome.tweaks.desktop'
+    'dconf-editor.desktop'
+    'org.gnome.Extensions.desktop'
+    'com.mattjakeman.ExtensionManager.desktop'
+  )
 
   cl_print "[*INFO*] - Removing app assignments from any folder..." "blue"
 
   for app in "${apps_to_add[@]}"; do
-    # Remove app from any folder it appears in
     local all_folders
     all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
 
     for folder in $all_folders; do
+      # Skip target folder itself
+      if [[ "$folder" == "$folder_id/" ]]; then
+        continue
+      fi
+
       local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
       local current_apps
       current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
@@ -95,16 +104,14 @@ create_config_tool_apps_dir() {
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
 
-  # Build apps list and add them
-  local app_entries=()
-  for app in "${apps_to_add[@]}"; do
-    app_entries+=("\"$app\"")
-  done
-  local apps_list="[${app_entries[*]}]"
+  # Build a valid GVariant array like ["a", "b", "c"]
+  local app_entries
+  app_entries=$(printf '"%s", ' "${apps_to_add[@]}")
+  app_entries="[${app_entries%, }]"
 
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$apps_list"
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$app_entries"
 
-  # Register folder if not already in folder-children
+  # Register folder in folder-children if not present
   local current_children
   current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
 

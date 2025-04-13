@@ -199,9 +199,8 @@ main() {
    change_appearance_color_to_dark_and_purple
    handle_dash_to_dock_to_be_installed
 
-   sleep 600
-
    change_dock_to_macos_style
+   sleep 600
    enable_auto_hide_dock
    change_click_window_to_minimize_to_dock
    enable_window_hover_show

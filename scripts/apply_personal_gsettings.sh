@@ -92,23 +92,26 @@ check_dash_to_dock_is_installed() {
     cl_print "[*INFO*] - Dash-to-Dock not found, installing..." "yellow"
     unlock_sudo
 
-    # Get GNOME Shell version (e.g., 46 or 45.2)
-    local shell_version=$(gnome-shell --version | awk '{print $3}')
+    sudo apt install -y curl jq wget unzip
 
-    # Get download URL via `curl`
+    local shell_version=$(gnome-shell --version | awk '{print $3}')
     local download_url=$(curl -s "https://extensions.gnome.org/extension-info/?pk=$extension_id&shell_version=$shell_version" | jq -r '.download_url')
 
-    if [[ "$download_url" == "null" ]]; then
-      cl_print "[*ERROR*] - Cannot find download URL for Dash-to-Dock (ID: $extension_id) with GNOME Shell $shell_version" "red"
+    if [[ "$download_url" == "null" || -z "$download_url" ]]; then
+      cl_print "[*ERROR*] - Could not find valid download URL for Dash-to-Dock (GNOME $shell_version)" "red"
       return 1
     fi
 
-    # Download and install
     local tmp_file="/tmp/dash-to-dock.zip"
     wget -O "$tmp_file" "https://extensions.gnome.org$download_url"
-    gnome-extensions install "$tmp_file" --force
 
-    cl_print "[*INFO*] - Dash-to-Dock extension installed successfully." "green"
+    if unzip -tq "$tmp_file" &>/dev/null; then
+      gnome-extensions install "$tmp_file" --force
+      cl_print "[*INFO*] - Dash-to-Dock installed successfully." "green"
+    else
+      cl_print "[*ERROR*] - Downloaded file is not a valid archive." "red"
+      return 1
+    fi
   else
     cl_print "[*INFO*] - Dash-to-Dock is already installed." "cyan"
   fi

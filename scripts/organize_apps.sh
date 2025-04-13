@@ -69,7 +69,7 @@ create_config_tool_apps_dir() {
   local folder_name="'Config Tools'"
   local apps_to_add=(
     'org.gnome.tweaks.desktop'
-    'dconf-editor.desktop'
+    'ca.desrt.dconf-editor.desktop'
     'org.gnome.Extensions.desktop'
     'com.mattjakeman.ExtensionManager.desktop'
   )
@@ -148,21 +148,19 @@ create_system_tool_apps_dir() {
     'gparted.desktop'
   )
 
-  cl_print "[*INFO*] - Cleaning up any existing folder assignments..." "blue"
+  cl_print "[*INFO*] - Removing app assignments from any folder..." "blue"
 
-  # >>> Remove each app from all folders
-  local all_folders
-  all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
-
-  for folder in $all_folders; do
-    local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
-    local current_apps
-    current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
-
-    for app in "${apps_to_add[@]}"; do
+  for app in "${apps_to_add[@]}"; do
+    local all_folders
+    all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
+    for folder in $all_folders; do
+      [[ "$folder" == "$folder_id/" ]] && continue
+      local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
+      local current_apps
+      current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
       if [[ "$current_apps" == *"$app"* ]]; then
         local cleaned_apps
-        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
+        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/\"$app\",*//g" | sed 's/,,/,/g' | sed 's/\[,\{0,1\}\]/[]/g' | sed 's/,\s*\]/]/')
         cleaned_apps="${cleaned_apps//\'/\"}"
         dconf write "${folder_path}apps" "$cleaned_apps"
         cl_print "[*INFO*] - Removed '$app' from folder '${folder}'" "yellow"
@@ -170,21 +168,17 @@ create_system_tool_apps_dir() {
     done
   done
 
-  # >>> Add all apps to the new folder
-  cl_print "[*INFO*] - Creating '$folder_id' with system tools..." "blue"
+  cl_print "[*INFO*] - Rebuilding '${folder_id}' folder..." "blue"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
 
-  local apps_list="['${apps_to_add[*]}']"
-  apps_list=${apps_list// /', '}
-  apps_list="${apps_list//\'/\"}"  # GVariant-friendly
+  local app_entries
+  app_entries=$(printf '"%s", ' "${apps_to_add[@]}")
+  app_entries="[${app_entries%, }]"
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$app_entries"
 
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$apps_list"
-
-  # >>> Register folder in folder-children
   local current_children
   current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
-
   if [[ "$current_children" != *"$folder_id"* ]]; then
     if [[ "$current_children" == "[]" ]]; then
       dconf write /org/gnome/desktop/app-folders/folder-children "['$folder_id']"
@@ -204,22 +198,71 @@ create_system_tool_apps_dir() {
 }
 
 
-# create_screen_recording_apps_dir() {
-#   local folder_id="screen-recording-apps"
-#   local folder_name="'Screen Recording Apps'"
-#   local apps_to_add=(
-#     'simplescreenrecorder.desktop'
-#     'com.obsproject.Studio.desktop'
-#   )
 
-#   cl_print "[*DONE*] - Screen Recording Apps folder created successfully." "green"
-# }
+create_screen_recording_apps_dir() {
+  local folder_id="screen-recording-apps"
+  local folder_name="'Screen Recording Apps'"
+  local apps_to_add=(
+    'simplescreenrecorder.desktop'
+    'com.obsproject.Studio.desktop'
+  )
+
+  cl_print "[*INFO*] - Removing app assignments from any folder..." "blue"
+
+  for app in "${apps_to_add[@]}"; do
+    local all_folders
+    all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
+    for folder in $all_folders; do
+      [[ "$folder" == "$folder_id/" ]] && continue
+      local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
+      local current_apps
+      current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
+      if [[ "$current_apps" == *"$app"* ]]; then
+        local cleaned_apps
+        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/\"$app\",*//g" | sed 's/,,/,/g' | sed 's/\[,\{0,1\}\]/[]/g' | sed 's/,\s*\]/]/')
+        cleaned_apps="${cleaned_apps//\'/\"}"
+        dconf write "${folder_path}apps" "$cleaned_apps"
+        cl_print "[*INFO*] - Removed '$app' from folder '${folder}'" "yellow"
+      fi
+    done
+  done
+
+  cl_print "[*INFO*] - Rebuilding '${folder_id}' folder..." "blue"
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
+
+  local app_entries
+  app_entries=$(printf '"%s", ' "${apps_to_add[@]}")
+  app_entries="[${app_entries%, }]"
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$app_entries"
+
+  local current_children
+  current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
+  if [[ "$current_children" != *"$folder_id"* ]]; then
+    if [[ "$current_children" == "[]" ]]; then
+      dconf write /org/gnome/desktop/app-folders/folder-children "['$folder_id']"
+    else
+      local updated_children
+      updated_children=$(echo "$current_children" | sed "s/^\[//;s/\]$//;s/\"//g")
+      updated_children="[$updated_children, '$folder_id']"
+      updated_children="${updated_children//\'/\"}"
+      dconf write /org/gnome/desktop/app-folders/folder-children "$updated_children"
+    fi
+    cl_print "[*INFO*] - Registered '$folder_id' in folder-children." "green"
+  else
+    cl_print "[*INFO*] - '$folder_id' already registered in folder-children." "yellow"
+  fi
+
+  cl_print "[*DONE*] - Screen Recording Apps folder created successfully." "green"
+}
+
 
 
 
 main() {
   create_config_tool_apps_dir
-  # create_system_tool_apps_dir
+  create_system_tool_apps_dir
+  create_screen_recording_apps_dir
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

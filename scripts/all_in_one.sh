@@ -388,6 +388,9 @@ launcher_main() {
     do_apt_update_and_upgrade
     install_useful_packages
 
+    cl_print "finish install useful packages \n" "yellow"
+    sleep 600
+
     install_github_cli
     install_docker
     install_obs

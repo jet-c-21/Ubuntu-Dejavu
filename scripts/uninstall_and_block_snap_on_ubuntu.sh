@@ -250,13 +250,13 @@ install_gdebi() {
   unlock_sudo
   sudo apt install -y gdebi-core gdebi
 
-  cl_print "[*INFO*] - gdebi is installed." "green"
+  cl_print "[*INFO*] - gdebi is installed." "cyan"
 
   # Optional: Set gdebi as the default app for .deb files
   if command -v xdg-mime &>/dev/null; then
     cl_print "[*INFO*] - setting gdebi-gtk as default handler for .deb files ..." "cyan"
     xdg-mime default gdebi.desktop application/vnd.debian.binary-package
-    cl_print "[*INFO*] - gdebi-gtk is now the default for .deb files. \n" "green"
+    cl_print "[*INFO*] - gdebi-gtk is now the default for .deb files. \n" "cyan"
   else
     cl_print "[*WARN*] - xdg-mime not found. Cannot set file association." "yellow"
   fi
@@ -277,7 +277,7 @@ main() {
   install_gnome_software
   install_gdebi
 
-  cl_print "[*INFO*] - All done. Snap is uninstalled and blocked on your system. \n" "green"
+  cl_print "[*INFO*] - Snap now is completely uninstalled and blocked on your system. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

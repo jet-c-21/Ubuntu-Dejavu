@@ -96,6 +96,14 @@ _purge_all_snap_apps_on_ubuntu_nobel_numbat() {
 
   unlock_sudo
 
+  # Helper: Wait for auto-refresh to finish
+  _wait_for_snap_auto_refresh() {
+    while snap changes | grep -q "Doing.*auto-refresh"; do
+      cl_print "[*INFO*] - Waiting for ongoing snap auto-refresh to finish..." "yellow"
+      sleep 5
+    done
+  }
+
   # List of snaps to remove in the proper order
   local snaps_to_remove=(
     "firefox"
@@ -112,14 +120,33 @@ _purge_all_snap_apps_on_ubuntu_nobel_numbat() {
 
   for snap in "${snaps_to_remove[@]}"; do
     if snap list | grep -q "^$snap\b"; then
-      cl_print "[*INFO*] - Removing $snap ..."
-      sudo snap remove --purge "$snap"
+      cl_print "[*INFO*] - Preparing to remove $snap ..."
+      _wait_for_snap_auto_refresh
+
+      local attempt=1
+      local max_attempts=3
+
+      while (( attempt <= max_attempts )); do
+        if sudo snap remove --purge "$snap"; then
+          cl_print "[*INFO*] - $snap removed successfully." "green"
+          break
+        else
+          cl_print "[*WARN*] - Failed to remove $snap (attempt $attempt). Retrying in 5s..." "yellow"
+          _wait_for_snap_auto_refresh
+          sleep 5
+        fi
+        ((attempt++))
+      done
+
+      if (( attempt > max_attempts )); then
+        cl_print "[*ERROR*] - Failed to remove $snap after $max_attempts attempts." "red"
+      fi
     else
       cl_print "[*INFO*] - $snap is not installed, skipping." "yellow"
     fi
   done
 
-  cl_print "[*INFO*] - All default Snap packages have been purged." "green"
+  cl_print "[*INFO*] - Snap app purge process finished." "green"
 }
 
 purge_all_snap_apps() {

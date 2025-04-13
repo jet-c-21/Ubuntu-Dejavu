@@ -236,6 +236,11 @@ install_gdebi() {
 }
 
 main() {
+  if ! command -v snap &>/dev/null; then
+    cl_print "[*INFO*] - Snap is not installed on this system. Nothing to uninstall. \n" "green"
+    return 0
+  fi
+
   purge_all_snap_apps
   disable_snapd_service
   purge_snapd

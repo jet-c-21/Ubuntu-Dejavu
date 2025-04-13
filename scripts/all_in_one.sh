@@ -479,6 +479,9 @@ launcher_main() {
 
     reduce_swappiness
 
+    unlock_sudo
+    sudo reboot
+
     cl_print "[*INFO*] - finish running UBUNTU DEJAVU all in one launcher! \n"
 }
 

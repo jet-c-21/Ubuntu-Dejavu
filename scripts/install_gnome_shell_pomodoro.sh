@@ -63,10 +63,11 @@ unlock_sudo() {
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-enable_gnome_pomodoro_auto_start() {
-  cl_print "[*INFO*] - Enabling gnome-pomodoro to auto-start..." "cyan"
 
-  local desktop_file="$HOME/.config/autostart/gnome-pomodoro.desktop"
+enable_gnome_shell_pomodoro_auto_start() {
+  cl_print "[*INFO*] - Enabling gnome-shell-pomodoro to auto-start..." "cyan"
+
+  local desktop_file="$HOME/.config/autostart/gnome-shell-pomodoro.desktop"
 
   mkdir -p "$HOME/.config/autostart"
 
@@ -81,21 +82,21 @@ Name=Pomodoro Timer
 Comment=Start Pomodoro timer on login
 EOF
 
-  cl_print "[*INFO*] - gnome-pomodoro auto-start enabled." "green"
+  cl_print "[*INFO*] - gnome-shell-pomodoro auto-start enabled." "green"
 }
 
-install_gnome_pomodoro() {
-  cl_print "[*INFO*] - Installing gnome-pomodoro..." "cyan"
-  use_sudo apt install -y gnome-pomodoro
+install_gnome_shell_pomodoro() {
+  cl_print "[*INFO*] - Installing gnome-shell-pomodoro..." "cyan"
+  unlock_sudo
 
-  # make it automatically start on login
+  sudo apt-get install -y gnome-shell-pomodoro
 
-  cl_print "[*INFO*] - gnome-pomodoro installed successfully!" "green"
+  cl_print "[*INFO*] - gnome-shell-pomodoro installed successfully!" "green"
 }
 
 main() {
-  install_gnome_pomodoro
-  enable_gnome_pomodoro_auto_start
+  install_gnome_shell_pomodoro
+  enable_gnome_shell_pomodoro_auto_start
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

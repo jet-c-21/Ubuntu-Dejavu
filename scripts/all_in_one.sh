@@ -370,7 +370,7 @@ install_appimage_launcher() {
   cl_print "[*INFO*] - Installing AppImageLauncher .deb package..." "cyan"
   sudo apt install -y "$deb_file"
 
-  cl_print "[*INFO*] - AppImageLauncher installed successfully via .deb" "green"
+  cl_print "[*INFO*] - AppImageLauncher installed successfully via .deb \n" "green"
 }
 
 
@@ -432,25 +432,25 @@ launcher_main() {
     # install_celluloid
     # install_ubuntu_cleaner
     # install_telegram
-    install_appimage_launcher
-    install_extra_codec
+    # install_appimage_launcher
+    # install_extra_codec
 
-    # * install browsers by sub scripts    
-    source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
-    main
+    # # * install browsers by sub scripts    
+    # source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
+    # main
 
-    source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
+    # main
 
-    source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
+    # main
 
-    # * install IDE by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
-    main
+    # # * install IDE by sub scripts
+    # source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
+    # main
 
-    source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
+    # main
 
     # * install useful apps by sub scripts
     source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
@@ -460,7 +460,7 @@ launcher_main() {
     main
 
     # * install productivity tools by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_gnome_pomodoro.sh"
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
     main
 
     # * install flatpak and flathub apps by sub scripts

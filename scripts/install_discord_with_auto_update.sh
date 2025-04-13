@@ -95,7 +95,7 @@ install_discord_apt() {
   # Install Discord
   sudo apt install -y discord
 
-  cl_print "[*INFO*] - Discord installed successfully via APT." "green"
+  cl_print "[*INFO*] - Discord installed successfully via APT. \n" "cyan"
 }
 
 enable_discord_auto_update() {
@@ -110,7 +110,7 @@ enable_discord_auto_update() {
     cl_print "[*INFO*] - Creating cron job to auto-update Discord on boot..."
     unlock_sudo
     sudo sh -c "(crontab -l; echo \"$cron_job\") | crontab -"
-    cl_print "[*INFO*] - Auto-updates for Discord enabled successfully." "green"
+    cl_print "[*INFO*] - Auto-updates for Discord enabled successfully. \n" "cyan"
   else
     cl_print "[*INFO*] - Cron job for Discord auto-update already exists, skipping." "yellow"
   fi

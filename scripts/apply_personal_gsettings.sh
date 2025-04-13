@@ -85,37 +85,27 @@ change_appearance_color_to_dark_and_purple() {
 
 
 check_dash_to_dock_is_installed() {
-  local extension_id="307"
-  local uuid="dash-to-dock@micxgx.gmail.com"
+  cl_print "[*INFO*] - Checking if Dash-to-Dock is installed..." "cyan"
 
-  if ! gnome-extensions list | grep -q "$uuid"; then
-    cl_print "[*INFO*] - Dash-to-Dock not found, installing..." "yellow"
+  if ! gnome-extensions list | grep -q 'dash-to-dock'; then
+    cl_print "[*INFO*] - Dash-to-Dock is not installed. Installing..." "yellow"
     unlock_sudo
+    sudo apt install -y gnome-shell-extension-dashtodock
 
-    sudo apt install -y curl jq wget unzip
-
-    local shell_version=$(gnome-shell --version | awk '{print $3}')
-    local download_url=$(curl -s "https://extensions.gnome.org/extension-info/?pk=$extension_id&shell_version=$shell_version" | jq -r '.download_url')
-
-    if [[ "$download_url" == "null" || -z "$download_url" ]]; then
-      cl_print "[*ERROR*] - Could not find valid download URL for Dash-to-Dock (GNOME $shell_version)" "red"
-      return 1
-    fi
-
-    local tmp_file="/tmp/dash-to-dock.zip"
-    wget -O "$tmp_file" "https://extensions.gnome.org$download_url"
-
-    if unzip -tq "$tmp_file" &>/dev/null; then
-      gnome-extensions install "$tmp_file" --force
-      cl_print "[*INFO*] - Dash-to-Dock installed successfully." "green"
+    # Reload GNOME shell extensions (only works on X11)
+    if [[ $XDG_SESSION_TYPE == "x11" ]]; then
+      cl_print "[*INFO*] - Reloading GNOME Shell..." "cyan"
+      echo 'r' | gnome-shell --replace &
     else
-      cl_print "[*ERROR*] - Downloaded file is not a valid archive." "red"
-      return 1
+      cl_print "[*WARN*] - On Wayland, you need to log out and log back in to activate extensions." "yellow"
     fi
+
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully." "green"
   else
-    cl_print "[*INFO*] - Dash-to-Dock is already installed." "cyan"
+    cl_print "[*INFO*] - Dash-to-Dock is already installed." "green"
   fi
 }
+
 
 
 

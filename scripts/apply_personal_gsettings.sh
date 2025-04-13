@@ -294,6 +294,7 @@ main() {
    change_scroll_action
    enable_window_hover_show
    change_dock_background_opacity
+   change_dock_icon_size
    disable_recent_file_history
    hide_home_dir_on_desktop
    hide_mount_drive_on_dock

@@ -59,46 +59,48 @@ use_sudo() {
 
 unlock_sudo() {
   local result="$(use_sudo whoami)"
-  cl_print "[*INFO*] - Unlocked sudo for user: $result" "cyan"
+  cl_print "[*INFO*] - unlocked sudo for user: $result" "cyan"
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-check_if_sublime_text_installed() {
-  if command -v subl &>/dev/null || dpkg -l | grep -q sublime-text; then
+check_if_brave_installed() {
+  if command -v brave-browser &>/dev/null || dpkg -l | grep -q brave-browser; then
     return 0
   else
     return 1
   fi
 }
 
+install_brave() {
+  unlock_sudo
+
+  if ! command -v curl &>/dev/null; then
+    cl_print "[*INFO*] - Installing curl..." "cyan"
+    use_sudo apt install -y curl
+  fi
+
+  cl_print "[*INFO*] - Adding Brave repository and key..." "cyan"
+
+  use_sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg \
+    https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+
+  echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" \
+    | use_sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null
+
+  use_sudo apt update
+  use_sudo apt install -y brave-browser
+}
+
 main() {
-  if check_if_sublime_text_installed; then
-    cl_print "Sublime Text is already installed. Exit." "blue"
+  if check_if_brave_installed; then
+    cl_print "Brave is already installed. No action needed. Exiting." "blue"
     return 0
   fi
 
-  cl_print "[*INFO*] - Installing Sublime Text..." "cyan"
+  install_brave
 
-  unlock_sudo
-
-  # Ensure wget is installed
-  if ! command -v wget &>/dev/null; then
-    sudo apt-get install -y wget
-  fi
-
-  # Add GPG key
-  wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
-
-  # Add apt source
-  echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list > /dev/null
-
-  # Install Sublime Text
-  unlock_sudo
-  sudo apt-get update
-  sudo apt-get install -y sublime-text
-
-  cl_print "[*INFO*] - Sublime Text has been installed successfully." "green"
+  cl_print "[*INFO*] - Brave has been installed successfully. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

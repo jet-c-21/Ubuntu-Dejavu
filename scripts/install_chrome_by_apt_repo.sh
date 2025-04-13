@@ -75,16 +75,16 @@ check_if_chrome_installed() {
 }
 
 install_chrome() {
+  unlock_sudo
+
   cl_print "[*INFO*] - Adding Google signing key and repository..." "cyan"
-  use_sudo wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | use_sudo apt-key add -
-  echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | use_sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
-  use_sudo apt-get update
-  use_sudo apt-get install -y google-chrome-stable
+  sudo wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+  echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
+  sudo apt-get update
+  sudo apt-get install -y google-chrome-stable
 }
 
 main() {
-  unlock_sudo
-
   if check_if_chrome_installed; then
     cl_print "No action needed. Exiting." "blue"
     return 0

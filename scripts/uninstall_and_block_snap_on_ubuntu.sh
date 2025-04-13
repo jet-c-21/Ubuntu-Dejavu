@@ -94,6 +94,8 @@ unlock_sudo() {
 _purge_all_snap_apps_ubuntu_nobel_numbat() {
   cl_print "[*INFO*] - Start purging default Snap apps on Ubuntu 24.04 Noble Numbat..."
 
+  unlock_sudo
+
   # List of snaps to remove in the proper order
   local snaps_to_remove=(
     "firefox"
@@ -110,7 +112,7 @@ _purge_all_snap_apps_ubuntu_nobel_numbat() {
   for snap in "${snaps_to_remove[@]}"; do
     if snap list | grep -q "^$snap\b"; then
       cl_print "[*INFO*] - Removing $snap ..."
-      use_sudo snap remove -y --purge "$snap"
+      sudo snap remove -y --purge "$snap"
     else
       cl_print "[*INFO*] - $snap is not installed, skipping." "yellow"
     fi

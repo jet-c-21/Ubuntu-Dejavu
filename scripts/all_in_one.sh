@@ -141,7 +141,6 @@ launcher_main() {
     source "${THIS_FILE_PARENT_DIR}/z_subscript_template.sh"
     main
 
-
     cl_print "[*INFO*] - finish running UBUNTU DEJAVU all in one launcher! \n"
 }
 

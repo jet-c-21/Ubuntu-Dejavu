@@ -97,7 +97,7 @@ check_if_firefox_installed() {
     cl_print "Firefox is already installed." "green"
     return 0
   else
-    cl_print "Firefox is not installed." "yellow"
+    cl_print "Firefox is not installed." "cyan"
     return 1
   fi
 }

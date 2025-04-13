@@ -64,35 +64,34 @@ unlock_sudo() {
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-check_if_chrome_installed() {
-  if dpkg -l | grep -q '^ii.*google-chrome-stable'; then
-    cl_print "Chrome is already installed." "green"
-    return 0
+create_config_tool_apps_dir() {
+  local folder_id="config-tools"
+  local folder_name="'Config Tools'"
+  local apps_list="['org.gnome.tweaks.desktop', 'dconf-editor.desktop', 'org.gnome.Extensions.desktop', 'com.mattjakeman.ExtensionManager.desktop']"
+
+  cl_print "[*INFO*] - Creating app folder '${folder_name}' with config tools..." "blue"
+
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "${apps_list}"
+
+  # Check if already in folder-children
+  local current_children
+  current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
+
+  if [[ "$current_children" == *"${folder_id}"* ]]; then
+    cl_print "[*INFO*] - '${folder_id}' already exists in folder-children. Skipping append." "yellow"
   else
-    cl_print "Chrome is not installed." "cyan"
-    return 1
+    dconf write /org/gnome/desktop/app-folders/folder-children "['${folder_id}']"
+    cl_print "[*INFO*] - Added '${folder_id}' to folder-children." "green"
   fi
+
+  cl_print "[*DONE*] - Config Tools folder created successfully." "green"
 }
 
-install_chrome() {
-  unlock_sudo
-
-  cl_print "[*INFO*] - Adding Google signing key and repository..." "cyan"
-  sudo wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-  echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
-  sudo apt-get update
-  sudo apt-get install -y google-chrome-stable
-}
 
 main() {
-  if check_if_chrome_installed; then
-    cl_print "No action needed. Exiting." "blue"
-    return 0
-  fi
-
-  install_chrome
-
-  cl_print "[*INFO*] - Chrome has been installed successfully. \n" "green"
+  create_config_tool_apps_dir
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

@@ -240,6 +240,34 @@ optimize_search_settings() {
   cl_print "[*INFO*] - GNOME search results now limited to Calculator and Settings." "green"
 }
 
+remove_default_app_from_dock() {
+  cl_print "[*INFO*] - Removing default apps from dock..." "blue"
+
+  apps_to_remove=(
+    "yelp.desktop"
+    "libreoffice-writer.desktop"
+    "org.gnome.Rhythmbox3.desktop"
+  )
+
+  local current_apps
+  current_apps=$(gsettings get org.gnome.shell favorite-apps)
+
+  for app in "${apps_to_remove[@]}"; do
+    if [[ "$current_apps" == *"'$app'"* || "$current_apps" == *"\"$app\""* ]]; then
+      cl_print "[*INFO*] - Removing '$app' from dock..." "yellow"
+      current_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed 's/,,/,/g' | sed 's/\[,\{0,1\}\]/[]/g')
+    else
+      cl_print "[*INFO*] - '$app' not found in dock. Skipping." "cyan"
+    fi
+  done
+
+  # Replace single with double quotes for valid GVariant syntax
+  current_apps="${current_apps//\'/\"}"
+  gsettings set org.gnome.shell favorite-apps "$current_apps"
+
+  cl_print "[*DONE*] - Default apps are removed from dock. \n" "green"
+}
+
 
 main() {
    change_appearance_color_to_dark_and_purple
@@ -255,6 +283,7 @@ main() {
    hide_home_dir_on_desktop
    hide_mount_drive_on_dock
    hide_trashcan_on_dock
+   remove_default_app_from_dock
    optimize_search_settings
 
    cl_print "[*INFO*] - All personal gsettings applied successfully! \n" "green"

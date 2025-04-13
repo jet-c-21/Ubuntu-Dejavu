@@ -84,27 +84,47 @@ change_appearance_color_to_dark_and_purple() {
 }
 
 
-check_dash_to_dock_is_installed() {
-  cl_print "[*INFO*] - Checking if Dash-to-Dock is installed..." "cyan"
+handle_dash_to_dock_to_be_installed() {
+  cl_print "[*INFO*] - Checking Dash-to-Dock status..." "cyan"
 
-  if ! gnome-extensions list | grep -q 'dash-to-dock'; then
-    cl_print "[*INFO*] - Dash-to-Dock is not installed. Installing..." "yellow"
-    unlock_sudo
-    sudo apt install -y gnome-shell-extension-dashtodock
+  local EXT_ID="dash-to-dock@micxgx.gmail.com"
+  local EXT_PATH="$HOME/.local/share/gnome-shell/extensions/$EXT_ID"
 
-    # Reload GNOME shell extensions (only works on X11)
-    if [[ $XDG_SESSION_TYPE == "x11" ]]; then
-      cl_print "[*INFO*] - Reloading GNOME Shell..." "cyan"
-      echo 'r' | gnome-shell --replace &
-    else
-      cl_print "[*WARN*] - On Wayland, you need to log out and log back in to activate extensions." "yellow"
-    fi
-
-    cl_print "[*INFO*] - Dash-to-Dock installed successfully." "green"
-  else
-    cl_print "[*INFO*] - Dash-to-Dock is already installed." "green"
+  # Disable built-in Ubuntu Dock
+  if gnome-extensions list | grep -q "ubuntu-dock@ubuntu.com"; then
+    cl_print "[*INFO*] - Disabling default Ubuntu Dock..." "yellow"
+    gnome-extensions disable ubuntu-dock@ubuntu.com
   fi
+
+  # Check if dash-to-dock is already installed
+  if gnome-extensions list | grep -q "$EXT_ID"; then
+    cl_print "[*INFO*] - Dash-to-Dock is already installed." "green"
+    return
+  fi
+
+  # Install prerequisites
+  unlock_sudo
+  sudo apt install -y unzip wget
+
+  # Download latest zip from GNOME Extensions
+  local TMP_DIR="/tmp/dash-to-dock-install"
+  mkdir -p "$TMP_DIR"
+  local ZIP_URL="https://extensions.gnome.org/extension-data/dash-to-dockmicxgx.gmail.com.v81.shell-extension.zip"
+  local ZIP_FILE="$TMP_DIR/dash-to-dock.zip"
+
+  cl_print "[*INFO*] - Downloading Dash-to-Dock extension..." "cyan"
+  wget -O "$ZIP_FILE" "$ZIP_URL"
+
+  cl_print "[*INFO*] - Installing Dash-to-Dock to local extensions folder..." "cyan"
+  mkdir -p "$EXT_PATH"
+  unzip -q "$ZIP_FILE" -d "$EXT_PATH"
+
+  # Enable the extension
+  gnome-extensions enable "$EXT_ID"
+
+  cl_print "[*INFO*] - Dash-to-Dock has been installed and enabled." "green"
 }
+
 
 
 

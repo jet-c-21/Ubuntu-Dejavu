@@ -114,6 +114,34 @@ change_power_to_performance_settings() {
   cl_print "[*INFO*] - Power settings adjusted to performance mode. \n" "green"
 }
 
+pin_app_to_dock() {
+  local app_desktop_name="$1"
+
+  if [[ -z "$app_desktop_name" ]]; then
+    cl_print "[*ERROR*] - Missing app desktop ID. Usage: pin_app_to_dock <app.desktop>" "red"
+    return 1
+  fi
+
+  if ! command -v gsettings &>/dev/null; then
+    cl_print "[*ERROR*] - gsettings not found. Cannot manage GNOME dock." "red"
+    return 1
+  fi
+
+  local current_apps
+  current_apps=$(gsettings get org.gnome.shell favorite-apps)
+
+  if [[ "$current_apps" == *"$app_desktop_name"* ]]; then
+    cl_print "[*INFO*] - '$app_desktop_name' is already pinned." "yellow"
+  else
+    local updated_apps
+    updated_apps=$(echo "$current_apps" | sed "s/^\[//;s/\]$//") # strip brackets
+    updated_apps="'[\"$app_desktop_name\"${updated_apps:+, $updated_apps}]'"
+
+    gsettings set org.gnome.shell favorite-apps "${updated_apps}"
+    cl_print "[*INFO*] - '$app_desktop_name' pinned to dock." "green"
+  fi
+}
+
 
 do_apt_update_and_upgrade() {
   unlock_sudo
@@ -449,71 +477,81 @@ prompt_reboot_notification() {
 launcher_main() {
     cl_print "[*INFO*] - start running UBUNTU DEJAVU all in one launcher ..."
     
-    # change_power_to_performance_settings
+    change_power_to_performance_settings
 
-    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    main
 
-    # do_apt_update_and_upgrade
-    # install_useful_packages
-    # install_gstreamer
-    # install_github_cli
-    # install_docker
-    # install_obs
-    # install_celluloid
-    # install_ubuntu_cleaner
-    # install_telegram
-    # install_appimage_launcher
-    # install_extra_codec
-
-    # # * install browsers by sub scripts    
-    # source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
-    # main
-
-    # source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
-    # main
-
-    # source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
-    # main
-
-    # # * install IDE by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
-    # main
-
-    # source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
-    # main
-
-    # # * install useful apps by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
-    # main
-
-    # source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
-    # main
-
-    # # * install productivity tools by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
-    # main
-
-    # # * install flatpak and flathub apps by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
-    # main
-
-    # source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
-    # main
+    do_apt_update_and_upgrade
+    install_useful_packages
+    install_gstreamer
+    install_github_cli
+    install_docker
+    install_obs
+    install_celluloid
+    install_ubuntu_cleaner
     
-    # # * update gnome settings
-    # source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
-    # main
+    install_telegram
+    pin_app_to_dock "telegram.desktop"
+
+    install_appimage_launcher
+    install_extra_codec
+
+    # * install browsers by sub scripts    
+    source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
+    main
+    pin_app_to_dock "firefox.desktop"
+
+    source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
+    main
+    pin_brave_to_dock "brave-browser.desktop"
+
+    source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
+    main
+    pin_app_to_dock "google-chrome.desktop"
+
+    # * install IDE by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
+    main
+    pin_app_to_dock "sublime_text.desktop"
+
+    source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
+    main
+    pin_app_to_dock "code.desktop"
+
+    # * install useful apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
+    main
+    pin_app_to_dock "discord.desktop"
+
+    source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
+    main
+
+    # * install productivity tools by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
+    main
+    pin_app_to_dock "org.gnome.Pomodoro.desktop"
+
+    # * install flatpak and flathub apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
+    main
     
-    # source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
-    # main
+    # * update gnome settings
+    source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
+    main
+    
+    source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
+    main
 
     source "${THIS_FILE_PARENT_DIR}/organize_apps.sh"
     main
 
-    # reduce_swappiness
+    reduce_swappiness
     
-    # prompt_reboot_notification
+    prompt_reboot_notification
 
     cl_print "[*INFO*] - finish running UBUNTU DEJAVU all in one launcher! \n"
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 0.0.5
+# version: 0.0.6
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -576,17 +576,17 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    main
 
-    # do_apt_update_and_upgrade
-    # install_useful_packages
-    # install_gstreamer
-    # install_github_cli
-    # install_docker
-    # install_obs
-    # install_celluloid
-    # install_ubuntu_cleaner
+    do_apt_update_and_upgrade
+    install_useful_packages
+    install_gstreamer
+    install_github_cli
+    install_docker
+    install_obs
+    install_celluloid
+    install_ubuntu_cleaner
     
     install_telegram
     pin_app_to_dock "telegram.desktop"

@@ -97,6 +97,9 @@ handle_dash_to_dock_to_be_installed() {
     return 0
   fi
 
+  unlock_sudo
+  sudo apt install -y curl unzip
+
   cl_print "[*INFO*] - Downloading Dash-to-Dock from GNOME Extensions..." "cyan"
   curl -sSL -o "$zip_file" "$extension_url"
 

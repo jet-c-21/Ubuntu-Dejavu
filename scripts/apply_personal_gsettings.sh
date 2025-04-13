@@ -211,28 +211,33 @@ optimize_search_settings() {
   cl_print "[*INFO*] - Optimizing GNOME search to only include Calculator and Settings..." "cyan"
 
   local allowed=(
-    'gnome-calculator.desktop'
-    'gnome-control-center.desktop'
+    "gnome-calculator.desktop"
+    "gnome-control-center.desktop"
   )
 
   local disabled=(
-    'org.gnome.Nautilus.desktop'
-    'org.gnome.clocks.desktop'
-    'org.gnome.Characters.desktop'
-    'org.gnome.seahorse.Application.desktop'
-    'org.gnome.Calendar.desktop'
-    'gnome-terminal.desktop'
-    'org.gnome.Weather.Application.desktop'
-    'org.gnome.Software.desktop'
+    "org.gnome.Nautilus.desktop"
+    "org.gnome.clocks.desktop"
+    "org.gnome.Characters.desktop"
+    "org.gnome.seahorse.Application.desktop"
+    "org.gnome.Calendar.desktop"
+    "gnome-terminal.desktop"
+    "org.gnome.Weather.Application.desktop"
+    "org.gnome.Software.desktop"
+    "org.gnome.Terminal.desktop"
   )
 
-  gsettings set org.gnome.desktop.search-providers enabled "['${allowed[*]}']"
-  gsettings set org.gnome.desktop.search-providers disabled "['${disabled[*]}']"
-  gsettings set org.gnome.desktop.search-providers sort-order "['${allowed[*]}']"
+  # Convert arrays to valid gsettings string lists
+  local allowed_str disabled_str
+  allowed_str=$(printf "'%s', " "${allowed[@]}" | sed 's/, $//')
+  disabled_str=$(printf "'%s', " "${disabled[@]}" | sed 's/, $//')
+
+  gsettings set org.gnome.desktop.search-providers enabled "[$allowed_str]"
+  gsettings set org.gnome.desktop.search-providers disabled "[$disabled_str]"
+  gsettings set org.gnome.desktop.search-providers sort-order "[$allowed_str]"
 
   cl_print "[*INFO*] - GNOME search results now limited to Calculator and Settings." "green"
 }
-
 
 
 main() {

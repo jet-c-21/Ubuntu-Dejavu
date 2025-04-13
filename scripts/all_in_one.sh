@@ -93,7 +93,7 @@ THIS_FILE_PATH="$(realpath "${BASH_SOURCE[0]}")"
 THIS_FILE_PARENT_DIR="$(dirname "$THIS_FILE_PATH")"
 
 change_power_to_performance_settings() {
-  cl_print "[*INFO*] - Setting power mode to performance..." "cyan"
+  cl_print "[*INFO*] - Setting power mode to performance..."
 
   # Set CPU scaling governor to performance for all CPUs
   for cpu in /sys/devices/system/cpu/cpu[0-9]*; do

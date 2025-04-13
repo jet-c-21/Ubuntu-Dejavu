@@ -127,44 +127,18 @@ handle_dash_to_dock_to_be_installed() {
     cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
     return 1
   fi
-
-  cl_print "[*WARN*] - Installed but not yet recognized by GNOME Shell." "yellow"
-
-  if [[ "$XDG_SESSION_TYPE" == "x11" ]]; then
-    cl_print "[*TIP*] - Press Alt+F2, then type 'r' and press Enter to reload GNOME Shell." "yellow"
-    cl_print "[*TIP*] - Or run this in a terminal (not GNOME Terminal):" "yellow"
-    echo -e "\n  nohup gnome-shell --replace > /dev/null 2>&1 &\n"
-    cl_print "[*WARN*] - WARNING: Use a standalone terminal like Alacritty or switch to TTY to avoid losing your session." "red"
-  else
-    cl_print "[*TIP*] - You're on Wayland. Please log out and back in to enable the extension." "yellow"
-  fi
 }
-
-
-
 
 
 change_dock_to_macos_style() {
   cl_print "[*INFO*] - Changing dock to macOS style..." "cyan"
 
-  # Set the dock to be floating (not fixed)
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-
-  # Disable panel mode (extend-height)
-  cl_print "[*INFO*] - Disabling panel mode (compact dock)..." "cyan"
   gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-
-  # Move dock to the bottom
-  cl_print "[*INFO*] - Moving dock to the bottom..." "cyan"
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
-
-  # Enable 'Show Apps at Top'
-  cl_print "[*INFO*] - Enabling 'Show Apps at Top'..." "cyan"
   gsettings set org.gnome.shell.extensions.dash-to-dock show-apps-at-top true
-
-  # show docks on all displays
-  cl_print "[*INFO*] - Showing docks on all displays..." "cyan"
-  gsettings set org.gnome.shell.extensions.dash-to-dock show-dock-on-all-displays true
+  gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
+  gsettings set org.gnome.shell.extensions.dash-to-dock icon-size-fixed false
 
   cl_print "[*INFO*] - Dock successfully changed to macOS style." "green"
 }

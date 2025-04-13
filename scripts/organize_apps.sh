@@ -69,21 +69,21 @@ create_config_tool_apps_dir() {
   local folder_name="'Config Tools'"
   local apps_to_add=('org.gnome.tweaks.desktop' 'dconf-editor.desktop' 'org.gnome.Extensions.desktop' 'com.mattjakeman.ExtensionManager.desktop')
 
-  cl_print "[*INFO*] - Cleaning up any existing folder assignments..." "blue"
+  cl_print "[*INFO*] - Removing app assignments from any folder..." "blue"
 
-  # >>> Remove each app from all folders it's already in
-  local all_folders
-  all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
+  for app in "${apps_to_add[@]}"; do
+    # Remove app from any folder it appears in
+    local all_folders
+    all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
 
-  for folder in $all_folders; do
-    local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
-    local current_apps
-    current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
+    for folder in $all_folders; do
+      local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
+      local current_apps
+      current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
 
-    for app in "${apps_to_add[@]}"; do
       if [[ "$current_apps" == *"$app"* ]]; then
         local cleaned_apps
-        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
+        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/\"$app\",*//g" | sed 's/,,/,/g' | sed 's/\[,\{0,1\}\]/[]/g' | sed 's/,\s*\]/]/')
         cleaned_apps="${cleaned_apps//\'/\"}"
         dconf write "${folder_path}apps" "$cleaned_apps"
         cl_print "[*INFO*] - Removed '$app' from folder '${folder}'" "yellow"
@@ -91,18 +91,20 @@ create_config_tool_apps_dir() {
     done
   done
 
-  # >>> Add all apps to the new folder
-  cl_print "[*INFO*] - Creating '$folder_id' with config tools..." "blue"
+  cl_print "[*INFO*] - Rebuilding '${folder_id}' folder..." "blue"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
 
-  local apps_list="['${apps_to_add[*]}']"
-  apps_list=${apps_list// /', '}
-  apps_list="${apps_list//\'/\"}"  # convert to GVariant string list
+  # Build apps list and add them
+  local app_entries=()
+  for app in "${apps_to_add[@]}"; do
+    app_entries+=("\"$app\"")
+  done
+  local apps_list="[${app_entries[*]}]"
 
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$apps_list"
 
-  # >>> Register folder in the folder-children if not already added
+  # Register folder if not already in folder-children
   local current_children
   current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
 
@@ -210,7 +212,7 @@ create_system_tool_apps_dir() {
 
 main() {
   create_config_tool_apps_dir
-  create_system_tool_apps_dir
+  # create_system_tool_apps_dir
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

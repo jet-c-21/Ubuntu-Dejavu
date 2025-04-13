@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 0.0.1
+# version: 0.0.2
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -413,6 +413,34 @@ reduce_swappiness () {
   cl_print "[*INFO*] - Finished reducing swappiness \n"
 }
 
+prompt_reboot_notification() {
+  local reboot_countdown_sec=50
+
+  cl_print "[*INFO*] - Preparing to reboot in $reboot_countdown_sec seconds..." "yellow"
+
+  # Install zenity if not present
+  if ! command -v zenity &>/dev/null; then
+    cl_print "[*INFO*] - 'zenity' not found. Installing it..." "cyan"
+    unlock_sudo
+    sudo apt install -y zenity
+  fi
+
+  # Use zenity for popup countdown
+  if command -v zenity &>/dev/null; then
+    (
+      for ((i=reboot_countdown_sec; i>0; i--)); do
+        zenity --info --timeout=1 \
+          --title="Ubuntu Dejavu" \
+          --text="System will reboot in $i second(s)...\n\nPress Ctrl+C to cancel in terminal."
+      done
+      sudo reboot
+    ) &
+  else
+    cl_print "[*WARN*] - 'zenity' not installed. Falling back to silent countdown." "red"
+    sleep "$reboot_countdown_sec"
+    sudo reboot
+  fi
+}
 
 
 launcher_main() {
@@ -420,59 +448,59 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    main
 
-    # do_apt_update_and_upgrade
-    # install_useful_packages
-    # install_gstreamer
-    # install_github_cli
-    # install_docker
-    # install_obs
-    # install_celluloid
-    # install_ubuntu_cleaner
-    # install_telegram
-    # install_appimage_launcher
-    # install_extra_codec
+    do_apt_update_and_upgrade
+    install_useful_packages
+    install_gstreamer
+    install_github_cli
+    install_docker
+    install_obs
+    install_celluloid
+    install_ubuntu_cleaner
+    install_telegram
+    install_appimage_launcher
+    install_extra_codec
 
-    # # * install browsers by sub scripts    
-    # source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
-    # main
+    # * install browsers by sub scripts    
+    source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
+    main
 
-    # source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
+    main
 
-    # source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
+    main
 
-    # # * install IDE by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
-    # main
+    # * install IDE by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
+    main
 
-    # source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
+    main
 
-    # # * install useful apps by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
-    # main
+    # * install useful apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
+    main
 
-    # source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
+    main
 
-    # # * install productivity tools by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
-    # main
+    # * install productivity tools by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
+    main
 
-    # # * install flatpak and flathub apps by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
-    # main
+    # * install flatpak and flathub apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
+    main
 
-    # source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
+    main
     
-    # # * update gnome settings
-    # source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
-    # main
+    # * update gnome settings
+    source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
+    main
     
     source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
     main
@@ -480,7 +508,8 @@ launcher_main() {
     reduce_swappiness
 
     unlock_sudo
-    sudo reboot
+    
+    prompt_reboot_notification
 
     cl_print "[*INFO*] - finish running UBUNTU DEJAVU all in one launcher! \n"
 }

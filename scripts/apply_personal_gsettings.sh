@@ -135,8 +135,8 @@ change_dock_to_macos_style() {
 
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
   gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-  # gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
-  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'LEFT'
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM'
+  # gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'LEFT'
   gsettings set org.gnome.shell.extensions.dash-to-dock show-apps-at-top true
   gsettings set org.gnome.shell.extensions.dash-to-dock icon-size-fixed false
 
@@ -149,11 +149,16 @@ enable_auto_hide_dock() {
 }
 
 # Change click action for Dash-to-Dock
-change_click_window_to_minimize_to_dock() {
-  local setting="org.gnome.shell.extensions.dash-to-dock click-action"
-  local value="'minimize'"
-  cl_print "[*INFO*] - Changing click action to minimize to dock \n" "cyan"
-  gsettings set ${setting} ${value}
+change_click_window_action() {
+  # gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+
+  gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
+  cl_print "[*INFO*] - Changing click action to minimize or previews \n" "cyan"
+}
+
+change_scroll_action() {
+  gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
+  cl_print "[*INFO*] - Changing scroll action to cycle windows \n" "cyan"
 }
 
 enable_window_hover_show() {
@@ -161,6 +166,14 @@ enable_window_hover_show() {
   gsettings set org.gnome.shell.extensions.dash-to-dock show-windows-preview true
   
   cl_print "[*INFO*] - Window hover preview enabled! \n" "green"
+}
+
+change_dock_background_opacity() {
+  local opacity="${1:-0.5}"  # Default to 0.5 if no argument passed
+
+  # Change dock background opacity
+  gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity "$opacity"
+  cl_print "[*INFO*] - Dock background opacity set to $opacity! \n" "green"
 }
 
 
@@ -205,12 +218,15 @@ main() {
 
    change_dock_to_macos_style
    enable_auto_hide_dock
-   change_click_window_to_minimize_to_dock
+   change_click_window_action
+   change_scroll_action
    enable_window_hover_show
+   change_dock_background_opacity
    disable_recent_file_history
    hide_home_dir_on_desktop
    hide_mount_drive_on_dock
    hide_trashcan_on_dock
+   optimize_search_settings
 
    cl_print "[*INFO*] - All personal gsettings applied successfully! \n" "green"
 }

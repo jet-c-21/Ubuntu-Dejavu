@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 0.0.6
+# version: 0.0.7
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -576,72 +576,72 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    main
 
-    # do_apt_update_and_upgrade
-    # install_useful_packages
-    # install_gstreamer
-    # install_github_cli
-    # install_docker
-    # install_obs
-    # install_celluloid
-    # install_ubuntu_cleaner
+    do_apt_update_and_upgrade
+    install_useful_packages
+    install_gstreamer
+    install_github_cli
+    install_docker
+    install_obs
+    install_celluloid
+    install_ubuntu_cleaner
     
-    # install_telegram
-    # pin_app_to_dock "telegram.desktop"
+    install_telegram
+    pin_app_to_dock "telegram.desktop"
 
-    # install_teamviewer_full_client_by_deb_file
-    # pin_app_to_dock "com.teamviewer.TeamViewer.desktop"
+    install_teamviewer_full_client_by_deb_file
+    pin_app_to_dock "com.teamviewer.TeamViewer.desktop"
 
-    # install_anydesk
-    # pin_app_to_dock "anydesk.desktop"
+    install_anydesk
+    pin_app_to_dock "anydesk.desktop"
 
-    # install_appimage_launcher
-    # install_extra_codec
+    install_appimage_launcher
+    install_extra_codec
 
-    # # * install browsers by sub scripts    
-    # source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
-    # main
-    # pin_app_to_dock "firefox.desktop"
+    # * install browsers by sub scripts    
+    source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
+    main
+    pin_app_to_dock "firefox.desktop"
 
-    # source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
-    # main
-    # pin_app_to_dock "brave-browser.desktop"
+    source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
+    main
+    pin_app_to_dock "brave-browser.desktop"
 
-    # source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
-    # main
-    # pin_app_to_dock "google-chrome.desktop"
+    source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
+    main
+    pin_app_to_dock "google-chrome.desktop"
 
-    # # * install IDE by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
-    # main
-    # pin_app_to_dock "sublime_text.desktop"
+    # * install IDE by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
+    main
+    pin_app_to_dock "sublime_text.desktop"
 
-    # source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
-    # main
-    # pin_app_to_dock "code.desktop"
+    source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
+    main
+    pin_app_to_dock "code.desktop"
 
-    # # * install useful apps by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
-    # main
-    # pin_app_to_dock "discord.desktop"
+    # * install useful apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
+    main
+    pin_app_to_dock "discord.desktop"
 
-    # source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
-    # main
+    source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
+    main
 
-    # # * install productivity tools by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
-    # main
-    # pin_app_to_dock "org.gnome.Pomodoro.desktop"
+    # * install productivity tools by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
+    main
+    pin_app_to_dock "org.gnome.Pomodoro.desktop"
 
-    # # * install flatpak and flathub apps by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
-    # main
+    # * install flatpak and flathub apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
+    main
 
-    # source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
-    # main
-    # pin_app_to_dock "com.bitwarden.desktop"
+    source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
+    main
+    pin_app_to_dock "com.bitwarden.desktop"
     
     # * update gnome settings
     source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"

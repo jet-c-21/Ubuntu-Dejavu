@@ -113,92 +113,82 @@ install_useful_packages() {
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 
   sudo apt update
+  cl_print "[*INFO*] - finish `sudo apt update` from new server \n"
 
-  # --- Core Development Tools ---
-  sudo apt install -y build-essential \
-      gcc \
-      g++ \
-      make \
-      clang \
-      cargo \
-      default-jdk \
-      linux-headers-$(uname -r) \    # For current kernel
-      linux-headers-generic \        # For future updates
-      pkg-config \
-      software-properties-common \   # Useful for add-apt-repository
-      ca-certificates \              # Needed for HTTPS downloads
-      # --- Common system libraries and support ---
-      libc6-i386 \                   # For running 32-bit apps
-      libc6-x32 \
-      libu2f-udev \
-      # --- Archiving and compression tools ---
-      unzip \
-      unrar \
-      p7zip \
-      bzip2 \
-      tar \
-      zip \
-      xz-utils \
-      # --- Disk Management ---
-      gparted \
-      # --- GUI package manager ---
-      synaptic \
-      # --- AppImage support ---
-      libfuse2 \
-      # --- File system and drive support ---
-      ntfs-3g \
-      exfat-fuse \
-      # --- Network and file sharing ---
-      samba-common-bin \
-      net-tools \
-      lsb-release \
-      curl \
-      wget \
-      git \
-      # --- Media support (full GStreamer stack) ---
-      gstreamer1.0-vaapi \
-      gstreamer1.0-plugins-base \
-      gstreamer1.0-plugins-good \
-      gstreamer1.0-plugins-bad \
-      gstreamer1.0-plugins-ugly \
-      gstreamer1.0-libav \
-      gnome-sushi \
-      # --- Python development ---
-      python3-pip \
-      python3-venv \                 # Enables `python3 -m venv`
-      python3-dev \                 # Headers for building Python packages
-      # --- Terminal utilities ---
-      tmux \
-      tree \
-      bash-completion \
-      fzf \                          # Fuzzy finder
-      ripgrep \                      # Fast recursive search
-      # --- Security ---
-      gnupg \
-      ufw \                          # Firewall
-      gufw \                         # GUI for UFW
-      # --- System monitoring ---
-      htop \
-      bpytop \
-      neofetch \ 
-      # --- Personal preference utilities ---
-      gnome-tweaks \
-      dconf-editor \
-      gnome-shell-extensions \
-      gnome-shell-extension-manager \
-      # --- Weather ---
-      gnome-weather \
-      # --- Camera ---
-      gnome-snapshot \
-      # --- Screen Recording ---
-      simplescreenrecorder \
-      # --- System cleaning utilities ---
-      bleachbit \              
-      # --- Performance speed up ---     
-      preload \
-      # --- Fonts ---
-      fonts-firacode  # make this line as the last package for the package list
+  # --- All required packages grouped into one list ---
+  local package_list=(
+    # --- Core Development Tools ---
+    build-essential gcc g++ make clang cargo default-jdk
+    linux-headers-$(uname -r) linux-headers-generic
+    pkg-config software-properties-common ca-certificates
+
+    # --- Common system libraries and support ---
+    libc6-i386 libc6-x32 libu2f-udev
+
+    # --- Archiving and compression tools ---
+    unzip unrar p7zip bzip2 tar zip xz-utils
+
+    # --- Disk Management ---
+    gparted
+
+    # --- GUI package manager ---
+    synaptic
+
+    # --- AppImage support ---
+    libfuse2
+
+    # --- File system and drive support ---
+    ntfs-3g exfat-fuse
+
+    # --- Network and file sharing ---
+    samba-common-bin net-tools lsb-release curl wget git
+
+    # --- Media support (full GStreamer stack) ---
+    gstreamer1.0-vaapi
+    gstreamer1.0-plugins-base
+    gstreamer1.0-plugins-good
+    gstreamer1.0-plugins-bad
+    gstreamer1.0-plugins-ugly
+    gstreamer1.0-libav
+    gnome-sushi
+
+    # --- Python development ---
+    python3-pip python3-venv python3-dev
+
+    # --- Terminal utilities ---
+    tmux tree bash-completion fzf ripgrep
+
+    # --- Security ---
+    gnupg ufw gufw
+
+    # --- System monitoring ---
+    htop bpytop neofetch
+
+    # --- Personal preference utilities ---
+    gnome-tweaks dconf-editor gnome-shell-extensions gnome-shell-extension-manager
+
+    # --- Weather ---
+    gnome-weather
+
+    # --- Camera ---
+    gnome-snapshot
+
+    # --- Screen Recording ---
+    simplescreenrecorder
+
+    # --- System cleaning utilities ---
+    bleachbit
+
+    # --- Performance speed up ---
+    preload
+
+    # --- Fonts (must be last) ---
+    fonts-firacode
+  )
+
+  sudo apt install -y "${package_list[@]}"
 }
+
 
 
 install_github_cli () {

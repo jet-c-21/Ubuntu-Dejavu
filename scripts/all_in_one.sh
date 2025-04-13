@@ -95,13 +95,16 @@ THIS_FILE_PARENT_DIR="$(dirname "$THIS_FILE_PATH")"
 do_apt_update_and_upgrade() {
   unlock_sudo
   
+  cl_print "[*INFO*] - start `sudo apt update` ..."
+  sudo apt update
+
   cl_print "[*INFO*] - start `sudo apt install` ..."
   sudo apt install
 
   cl_print "[*INFO*] - start `sudo apt upgrade -y` ..."
   sudo apt upgrade -y
 
-  cl_print "[*INFO*] - finish basic update \n"
+  cl_print "[*INFO*] - finish basic update \n" "green"
 }
 
 install_useful_packages() {

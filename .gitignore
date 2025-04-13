@@ -7,10 +7,11 @@
 
 
 ## Folders
-.idea
-.vscode
-.virtual_documents
-Video_Codec_SDK_*
+.idea/
+.vscode/
+.virtual_documents/
+Video_Codec_SDK_*/
+.history/
 
 
 ## Files

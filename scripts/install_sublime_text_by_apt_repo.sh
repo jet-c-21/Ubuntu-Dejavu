@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e
 
-
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# Define the colors
 declare -A COLORS=(
   ["red"]='\e[1;31m'
   ["green"]='\e[1;32m'
@@ -16,66 +14,42 @@ declare -A COLORS=(
 )
 COLOR_RESET='\e[0m'
 
-# Define the print function
 cl_print() {
   local text=$1
   local color=$2
-
-  # If the second argument is "dflt", print the text without color
   if [ "$color" == "dflt" ]; then
     echo -e "$text"
     return
   fi
-
-  # If only one argument is provided, print in pink color
-  if [ $# -eq 1 ]; then
+  if [ $# -eq 1 ] || [ -z "${COLORS[$color]}" ]; then
     color="pink"
   fi
-
-  # If the color is not defined, default to pink
-  if [ -z "${COLORS[$color]}" ]; then
-    color="pink"
-  fi
-
   echo -e "${COLORS[$color]}${text}${COLOR_RESET}"
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< color print <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ask user input sudo password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# Define a global SUDO_PASSWORD if not already set
 if [[ -z "${SUDO_PASSWORD}" ]]; then
-    echo -n "[*INFO*] - Please enter your sudo password: "
-    read -s user_input_password
-    echo
-
-    verify_password() {
-        local password=$1
-        echo "$password" | sudo -S -v &>/dev/null
-        return $?
-    }
-
-    if verify_password "$user_input_password"; then
-        export SUDO_PASSWORD="$user_input_password"
-        # You may also refresh the timestamp so future sudo doesn't ask again
-        echo "$SUDO_PASSWORD" | sudo -S -v &>/dev/null
-    else
-        echo "[*ERROR*] - Incorrect password." >&2
-        exit 1
-    fi
+  echo -n "[*INFO*] - Please enter your sudo password: "
+  read -s user_input_password
+  echo
+  verify_password() {
+    echo "$1" | sudo -S -v &>/dev/null
+  }
+  if verify_password "$user_input_password"; then
+    export SUDO_PASSWORD="$user_input_password"
+    echo "$SUDO_PASSWORD" | sudo -S -v &>/dev/null
+  else
+    echo "[*ERROR*] - Incorrect password." >&2
+    exit 1
+  fi
 fi
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ask user input sudo password <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> use and unlock sudo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 use_sudo() {
-  : <<COMMENT
-straight way:
-  echo "$SUDO_PASSWORD" | sudo -S your command
-example:
-  echo "$SUDO_PASSWORD" | sudo -S apt-get update
-COMMENT
-
   local cmd="echo ${SUDO_PASSWORD} | sudo -SE "
   for param in "$@"; do
     cmd+="${param} "
@@ -84,15 +58,14 @@ COMMENT
 }
 
 unlock_sudo() {
-  local command="whoami"
-  local result="$(use_sudo "$command")"
-  echo "[*INFO*] - unlock $result privilege"
+  local result="$(use_sudo whoami)"
+  cl_print "[*INFO*] - Unlocked sudo for user: $result" "cyan"
 }
-
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
 check_if_sublime_text_installed() {
-  if which subl >/dev/null 2>&1; then
+  if command -v subl &>/dev/null || dpkg -l | grep -q sublime-text; then
     return 0
   else
     return 1
@@ -100,29 +73,34 @@ check_if_sublime_text_installed() {
 }
 
 main() {
-  # Check if Firefox is installed
   if check_if_sublime_text_installed; then
-    cl_print "Sublime Text is already installed. Exit."
-    exit 0
+    cl_print "Sublime Text is already installed. Exit." "blue"
+    return 0
   fi
 
   unlock_sudo
 
-  # 1. install GPG key
-  sudo apt install -y wget
-  wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
+  cl_print "[*INFO*] - Installing Sublime Text..." "cyan"
 
-  # 2. select stable channel to use
-  echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+  # Ensure wget is installed
+  if ! command -v wget &>/dev/null; then
+    sudo apt-get install -y wget
+  fi
 
-  # 3. install sublime-text
-  sudo apt update
-  sudo apt install -y sublime-text
+  # Add GPG key
+  wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | use_sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
 
-  cl_print "[*INFO*] - Sublime Text is installed successfully."
+  # Add apt source
+  echo "deb https://download.sublimetext.com/ apt/stable/" | use_sudo tee /etc/apt/sources.list.d/sublime-text.list > /dev/null
+
+  # Install Sublime Text
+  unlock_sudo
+  sudo apt-get update
+  sudo apt-get install -y sublime-text
+
+  cl_print "[*INFO*] - Sublime Text has been installed successfully." "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
+  main "$@"
 fi
-

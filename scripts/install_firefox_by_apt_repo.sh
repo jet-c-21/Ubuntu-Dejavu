@@ -106,7 +106,7 @@ main() {
   # Check if Firefox is installed
   if check_if_firefox_installed; then
     cl_print "Firefox is already installed. Exit."
-    exit 0
+    return 0
   fi
 
   unlock_sudo

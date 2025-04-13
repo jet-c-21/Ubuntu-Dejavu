@@ -69,9 +69,9 @@ create_config_tool_apps_dir() {
   local folder_name="'Config Tools'"
   local apps_to_add=('org.gnome.tweaks.desktop' 'dconf-editor.desktop' 'org.gnome.Extensions.desktop' 'com.mattjakeman.ExtensionManager.desktop')
 
-  cl_print "[*INFO*] - Cleaning up existing app folder assignments..." "blue"
+  cl_print "[*INFO*] - Cleaning up any existing folder assignments..." "blue"
 
-  # Get all folder IDs
+  # >>> Remove each app from all folders it's already in
   local all_folders
   all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
 
@@ -80,38 +80,50 @@ create_config_tool_apps_dir() {
     local current_apps
     current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
 
-    for app_id in "${apps_to_add[@]}"; do
-      if [[ "$current_apps" == *"$app_id"* ]]; then
-        # Remove the app from the list
-        local new_apps
-        new_apps=$(echo "$current_apps" | sed "s/'$app_id',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
-        dconf write "${folder_path}apps" "$new_apps"
-        cl_print "[*INFO*] - Removed '$app_id' from folder '$folder'" "yellow"
+    for app in "${apps_to_add[@]}"; do
+      if [[ "$current_apps" == *"$app"* ]]; then
+        local cleaned_apps
+        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
+        cleaned_apps="${cleaned_apps//\'/\"}"
+        dconf write "${folder_path}apps" "$cleaned_apps"
+        cl_print "[*INFO*] - Removed '$app' from folder '${folder}'" "yellow"
       fi
     done
   done
 
-  local apps_list="['${apps_to_add[*]}']"
-  apps_list=${apps_list// /', '} # format list properly
-
-  cl_print "[*INFO*] - Creating app folder '${folder_name}' with config tools..." "blue"
-
+  # >>> Add all apps to the new folder
+  cl_print "[*INFO*] - Creating '$folder_id' with config tools..." "blue"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "[${apps_list}]"
 
+  local apps_list="['${apps_to_add[*]}']"
+  apps_list=${apps_list// /', '}
+  apps_list="${apps_list//\'/\"}"  # convert to GVariant string list
+
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$apps_list"
+
+  # >>> Register folder in the folder-children if not already added
   local current_children
   current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
 
-  if [[ "$current_children" == *"${folder_id}"* ]]; then
-    cl_print "[*INFO*] - '${folder_id}' already exists in folder-children. Skipping append." "yellow"
+  if [[ "$current_children" != *"$folder_id"* ]]; then
+    if [[ "$current_children" == "[]" ]]; then
+      dconf write /org/gnome/desktop/app-folders/folder-children "['$folder_id']"
+    else
+      local updated_children
+      updated_children=$(echo "$current_children" | sed "s/^\[//;s/\]$//;s/\"//g")
+      updated_children="[$updated_children, '$folder_id']"
+      updated_children="${updated_children//\'/\"}"
+      dconf write /org/gnome/desktop/app-folders/folder-children "$updated_children"
+    fi
+    cl_print "[*INFO*] - Registered '$folder_id' in folder-children." "green"
   else
-    dconf write /org/gnome/desktop/app-folders/folder-children "['${folder_id}']"
-    cl_print "[*INFO*] - Added '${folder_id}' to folder-children." "green"
+    cl_print "[*INFO*] - '$folder_id' already registered in folder-children." "yellow"
   fi
 
   cl_print "[*DONE*] - Config Tools folder created successfully." "green"
 }
+
 
 
 create_system_tool_apps_dir() {
@@ -127,9 +139,9 @@ create_system_tool_apps_dir() {
     'gparted.desktop'
   )
 
-  cl_print "[*INFO*] - Cleaning up existing app folder assignments..." "blue"
+  cl_print "[*INFO*] - Cleaning up any existing folder assignments..." "blue"
 
-  # Get all folder IDs
+  # >>> Remove each app from all folders
   local all_folders
   all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
 
@@ -138,88 +150,61 @@ create_system_tool_apps_dir() {
     local current_apps
     current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
 
-    for app_id in "${apps_to_add[@]}"; do
-      if [[ "$current_apps" == *"$app_id"* ]]; then
-        local new_apps
-        new_apps=$(echo "$current_apps" | sed "s/'$app_id',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
-        dconf write "${folder_path}apps" "$new_apps"
-        cl_print "[*INFO*] - Removed '$app_id' from folder '$folder'" "yellow"
+    for app in "${apps_to_add[@]}"; do
+      if [[ "$current_apps" == *"$app"* ]]; then
+        local cleaned_apps
+        cleaned_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
+        cleaned_apps="${cleaned_apps//\'/\"}"
+        dconf write "${folder_path}apps" "$cleaned_apps"
+        cl_print "[*INFO*] - Removed '$app' from folder '${folder}'" "yellow"
       fi
     done
   done
 
-  local apps_list="['${apps_to_add[*]}']"
-  apps_list=${apps_list// /', '} # format list properly
-
-  cl_print "[*INFO*] - Creating app folder '${folder_name}' with system tools..." "blue"
-
+  # >>> Add all apps to the new folder
+  cl_print "[*INFO*] - Creating '$folder_id' with system tools..." "blue"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
   dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "[${apps_list}]"
 
+  local apps_list="['${apps_to_add[*]}']"
+  apps_list=${apps_list// /', '}
+  apps_list="${apps_list//\'/\"}"  # GVariant-friendly
+
+  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "$apps_list"
+
+  # >>> Register folder in folder-children
   local current_children
   current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
 
-  if [[ "$current_children" == *"${folder_id}"* ]]; then
-    cl_print "[*INFO*] - '${folder_id}' already exists in folder-children. Skipping append." "yellow"
+  if [[ "$current_children" != *"$folder_id"* ]]; then
+    if [[ "$current_children" == "[]" ]]; then
+      dconf write /org/gnome/desktop/app-folders/folder-children "['$folder_id']"
+    else
+      local updated_children
+      updated_children=$(echo "$current_children" | sed "s/^\[//;s/\]$//;s/\"//g")
+      updated_children="[$updated_children, '$folder_id']"
+      updated_children="${updated_children//\'/\"}"
+      dconf write /org/gnome/desktop/app-folders/folder-children "$updated_children"
+    fi
+    cl_print "[*INFO*] - Registered '$folder_id' in folder-children." "green"
   else
-    dconf write /org/gnome/desktop/app-folders/folder-children "['${folder_id}']"
-    cl_print "[*INFO*] - Added '${folder_id}' to folder-children." "green"
+    cl_print "[*INFO*] - '$folder_id' already registered in folder-children." "yellow"
   fi
 
   cl_print "[*DONE*] - System Tools folder created successfully." "green"
 }
 
-create_screen_recording_apps_dir() {
-  local folder_id="screen-recording-apps"
-  local folder_name="'Screen Recording Apps'"
-  local apps_to_add=(
-    'simplescreenrecorder.desktop'
-    'com.obsproject.Studio.desktop'
-  )
 
-  cl_print "[*INFO*] - Cleaning up existing app folder assignments..." "blue"
+# create_screen_recording_apps_dir() {
+#   local folder_id="screen-recording-apps"
+#   local folder_name="'Screen Recording Apps'"
+#   local apps_to_add=(
+#     'simplescreenrecorder.desktop'
+#     'com.obsproject.Studio.desktop'
+#   )
 
-  # Get all folder IDs
-  local all_folders
-  all_folders=$(dconf list /org/gnome/desktop/app-folders/folders/)
-
-  for folder in $all_folders; do
-    local folder_path="/org/gnome/desktop/app-folders/folders/${folder}"
-    local current_apps
-    current_apps=$(dconf read "${folder_path}apps" 2>/dev/null || echo "[]")
-
-    for app_id in "${apps_to_add[@]}"; do
-      if [[ "$current_apps" == *"$app_id"* ]]; then
-        local new_apps
-        new_apps=$(echo "$current_apps" | sed "s/'$app_id',\?//g" | sed "s/,,/,/g" | sed "s/\[,\{0,1\}\]/[]/g")
-        dconf write "${folder_path}apps" "$new_apps"
-        cl_print "[*INFO*] - Removed '$app_id' from folder '$folder'" "yellow"
-      fi
-    done
-  done
-
-  local apps_list="['${apps_to_add[*]}']"
-  apps_list=${apps_list// /', '} # format list properly
-
-  cl_print "[*INFO*] - Creating app folder '${folder_name}' with screen recording apps..." "blue"
-
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/name "${folder_name}"
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/translate false
-  dconf write /org/gnome/desktop/app-folders/folders/${folder_id}/apps "[${apps_list}]"
-
-  local current_children
-  current_children=$(dconf read /org/gnome/desktop/app-folders/folder-children)
-
-  if [[ "$current_children" == *"${folder_id}"* ]]; then
-    cl_print "[*INFO*] - '${folder_id}' already exists in folder-children. Skipping append." "yellow"
-  else
-    dconf write /org/gnome/desktop/app-folders/folder-children "['${folder_id}']"
-    cl_print "[*INFO*] - Added '${folder_id}' to folder-children." "green"
-  fi
-
-  cl_print "[*DONE*] - Screen Recording Apps folder created successfully." "green"
-}
+#   cl_print "[*DONE*] - Screen Recording Apps folder created successfully." "green"
+# }
 
 
 

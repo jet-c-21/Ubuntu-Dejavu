@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 0.0.4
+# version: 0.0.5
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -130,17 +130,27 @@ pin_app_to_dock() {
   local current_apps
   current_apps=$(gsettings get org.gnome.shell favorite-apps)
 
-  if [[ "$current_apps" == *"$app_desktop_name"* ]]; then
+  if [[ "$current_apps" == *"'$app_desktop_name'"* || "$current_apps" == *"\"$app_desktop_name\""* ]]; then
     cl_print "[*INFO*] - '$app_desktop_name' is already pinned." "yellow"
   else
-    local updated_apps
-    updated_apps=$(echo "$current_apps" | sed "s/^\[//;s/\]$//") # strip brackets
-    updated_apps="'[\"$app_desktop_name\"${updated_apps:+, $updated_apps}]'"
+    # Remove brackets, if empty result, avoid extra comma
+    local stripped
+    stripped=$(echo "$current_apps" | sed -e "s/^\[\(.*\)\]$/\1/" )
 
-    gsettings set org.gnome.shell favorite-apps "${updated_apps}"
+    if [[ -z "$stripped" ]]; then
+      new_list="['$app_desktop_name']"
+    else
+      new_list="[$stripped, '$app_desktop_name']"
+    fi
+
+    # Ensure valid GVariant: replace all single quotes with double quotes
+    new_list="${new_list//\'/\"}"
+
+    gsettings set org.gnome.shell favorite-apps "$new_list"
     cl_print "[*INFO*] - '$app_desktop_name' pinned to dock." "green"
   fi
 }
+
 
 
 do_apt_update_and_upgrade() {
@@ -552,17 +562,17 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    # main
 
-    do_apt_update_and_upgrade
-    install_useful_packages
-    install_gstreamer
-    install_github_cli
-    install_docker
-    install_obs
-    install_celluloid
-    install_ubuntu_cleaner
+    # do_apt_update_and_upgrade
+    # install_useful_packages
+    # install_gstreamer
+    # install_github_cli
+    # install_docker
+    # install_obs
+    # install_celluloid
+    # install_ubuntu_cleaner
     
     install_telegram
     pin_app_to_dock "telegram.desktop"

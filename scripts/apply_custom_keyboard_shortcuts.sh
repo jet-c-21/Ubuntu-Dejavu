@@ -78,33 +78,45 @@ add_xkill_kb_shortcut() {
   local name="Xkill"
   local command="xkill"
   local binding="<Control>Escape"
-  local key_path="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
+  local base_path="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
+  local key="org.gnome.settings-daemon.plugins.media-keys.custom-keybinding"
 
   cl_print "[*INFO*] - Adding custom keyboard shortcut for Xkill..." "cyan"
 
-  # Get current custom keybindings
+  # Get current list of keybindings
   local current_list
   current_list=$(gsettings get org.gnome.settings-daemon.plugins.media-keys custom-keybindings)
 
-  # Set new keybinding index
-  local new_binding="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-  if [[ "$current_list" != *"$new_binding"* ]]; then
-    # Add to list
-    if [[ "$current_list" == "@as []" ]]; then
-      gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['$new_binding']"
-    else
-      updated_list=$(echo "$current_list" | sed "s/]$/, '$new_binding']/")
-      gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "$updated_list"
-    fi
+  # Remove '@as []' if it's empty
+  if [[ "$current_list" == "@as []" ]]; then
+    current_list="[]"
   fi
 
-  # Set name, command, and binding
-  gsettings set "${key_path}/custom0/" name "$name"
-  gsettings set "${key_path}/custom0/" command "$command"
-  gsettings set "${key_path}/custom0/" binding "$binding"
+  # Generate new unique custom path
+  local index=0
+  local new_binding="${base_path}/custom${index}/"
+  while [[ "$current_list" == *"$new_binding"* ]]; do
+    ((index++))
+    new_binding="${base_path}/custom${index}/"
+  done
+
+  # Append new binding to the list
+  local updated_list
+  if [[ "$current_list" == "[]" ]]; then
+    updated_list="['${new_binding}']"
+  else
+    updated_list=$(echo "$current_list" | sed "s/]$/, '${new_binding}']/")
+  fi
+  gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "$updated_list"
+
+  # Set shortcut properties
+  gsettings set "$key:$new_binding" name "$name"
+  gsettings set "$key:$new_binding" command "$command"
+  gsettings set "$key:$new_binding" binding "$binding"
 
   cl_print "[*INFO*] - Shortcut <Ctrl>+Escape for Xkill added successfully." "green"
 }
+
 
 
 

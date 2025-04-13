@@ -74,12 +74,15 @@ unlock_sudo() {
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 change_appearance_color_to_dark_and_purple() {
-  cl_print "[*INFO*] - Applying dark theme and Ubuntu purple accent color..." "cyan"
+  cl_print "[*INFO*] - Applying dark theme and Ubuntu magenta accent color..." "cyan"
 
-  # will implement this in the future
+  gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+  gsettings set org.gnome.desktop.interface gtk-theme 'Yaru-magenta-dark'
+  gsettings set org.gnome.desktop.interface icon-theme 'Yaru-magenta-dark'
 
-  cl_print "[*INFO*] - Appearance set to dark mode with Ubuntu purple accent." "green"
+  cl_print "[*INFO*] - Appearance set to dark mode with Ubuntu magenta accent. \n" "cyan"
 }
+
 
 # Check if Dash-to-Dock extension is installed
 check_dash_to_dock_is_installed() {

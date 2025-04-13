@@ -255,18 +255,25 @@ remove_default_app_from_dock() {
 
   for app in "${apps_to_remove[@]}"; do
     if [[ "$current_apps" == *"'$app'"* || "$current_apps" == *"\"$app\""* ]]; then
-      cl_print "[*INFO*] - Removing '$app' from dock..." "yellow"
-      current_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed 's/,,/,/g' | sed 's/\[,\{0,1\}\]/[]/g')
+      cl_print "[*INFO*] - Removing '$app' from dock..." "cyan"
+      current_apps=$(echo "$current_apps" | sed "s/'$app',\?//g" | sed "s/\"$app\",\?//g")
     else
       cl_print "[*INFO*] - '$app' not found in dock. Skipping." "cyan"
     fi
   done
 
-  # Replace single with double quotes for valid GVariant syntax
+  # Remove double commas and trailing commas/brackets edge cases
+  current_apps=$(echo "$current_apps" | sed 's/,,/,/g' | sed 's/\[,\{0,1\}\]/[]/g' | sed 's/,\s*\]$/]/')
+
+  # Replace single quotes with double quotes if any remain
   current_apps="${current_apps//\'/\"}"
+
+  cl_print "[*INFO*] - Final cleaned favorites list: $current_apps" "magenta"
+
+  # Apply new list
   gsettings set org.gnome.shell favorite-apps "$current_apps"
 
-  cl_print "[*DONE*] - Default apps are removed from dock. \n" "green"
+  cl_print "[*DONE*] - Default apps are removed from dock." "green"
 }
 
 

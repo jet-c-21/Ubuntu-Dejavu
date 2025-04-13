@@ -66,7 +66,7 @@ fi
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> use and unlock sudo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-use_sudo() {
+use_sudo() { # sudo experiment wrapper function
   : <<COMMENT
 straight way:
   echo "$SUDO_PASSWORD" | sudo -S your command
@@ -86,7 +86,6 @@ unlock_sudo() {
   local result="$(use_sudo "$command")"
   echo "[*INFO*] - unlock $result privilege"
 }
-
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 THIS_FILE_PATH="$(realpath "${BASH_SOURCE[0]}")"
@@ -104,10 +103,120 @@ do_apt_update_and_upgrade() {
   cl_print "[*INFO*] - finish basic update \n"
 }
 
-install_usefull_packages() {
+install_useful_packages() {
   unlock_sudo
-  sudo apt install -y nala # faster package manager (apt alternative)
+
+  # --- good package manager utilities ---
+  sudo apt install -y nala
+  sudo nala fetch
+  cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
+
+  # --- Core Development Tools ---
+  sudo apt install -y \
+      build-essential \              # GCC, make, libc headers, etc.
+      gcc \
+      g++ \
+      make \
+      clang \
+      cargo \
+      default-jdk \
+      linux-headers-$(uname -r) \    # For current kernel
+      linux-headers-generic \        # For future updates
+      pkg-config \
+      software-properties-common \   # Useful for add-apt-repository
+      ca-certificates \              # Needed for HTTPS downloads
+
+      # --- Common system libraries and support ---
+      libc6-i386 \                   # For running 32-bit apps
+      libc6-x32 \
+      libu2f-udev \
+
+      # --- Archiving and compression tools ---
+      unzip \
+      unrar \
+      p7zip \
+      bzip2 \
+      tar \
+      zip \
+      xz-utils \
+
+      # --- Disk Management ---
+      gparted \
+
+      # --- GUI package manager ---
+      synaptic
+
+      # --- AppImage support ---
+      libfuse2 \
+
+      # --- File system and drive support ---
+      ntfs-3g \
+      exfat-fuse \
+
+      # --- Network and file sharing ---
+      samba-common-bin \
+      net-tools \
+      lsb-release \
+      curl \
+      wget \
+      git \
+
+      # --- Media support (full GStreamer stack) ---
+      gstreamer1.0-vaapi \
+      gstreamer1.0-plugins-base \
+      gstreamer1.0-plugins-good \
+      gstreamer1.0-plugins-bad \
+      gstreamer1.0-plugins-ugly \
+      gstreamer1.0-libav \
+      gnome-sushi \
+
+      # --- Python development ---
+      python3-pip \
+      python3-venv \                 # Enables `python3 -m venv`
+      python3-dev \                 # Headers for building Python packages
+
+      # --- Terminal utilities ---
+      tmux \
+      tree \
+      bash-completion \
+      fzf \                          # Fuzzy finder
+      ripgrep \                      # Fast recursive search
+
+      # --- Security ---
+      gnupg \
+      ufw \                          # Firewall
+      gufw \                         # GUI for UFW
+
+      # --- System monitoring ---
+      htop \
+      bpytop \
+      neofetch \ 
+
+      # --- Personal preference utilities ---
+      gnome-tweaks \
+      dconf-editor \
+      gnome-shell-extensions \
+      gnome-shell-extension-manager \
+
+      # --- Weather ---
+      gnome-weather \
+
+      # --- Camera ---
+      gnome-snapshot \
+
+      # --- Screen Recording ---
+      simplescreenrecorder \
+
+      # --- System cleaning utilities ---
+      bleachbit \              
+
+      # --- Performance speed up ---     
+      preload \
+
+      # --- Fonts ---
+      fonts-firacode                # Keep this line at the end of the list
 }
+
 
 install_github_cli () {
   cl_print "[*INFO*] - start installing github cli ..."
@@ -120,20 +229,158 @@ install_github_cli () {
 	&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
 	&& sudo apt update \
-	&& sudo apt install gh -y
+	&& sudo apt install -y gh
 
   cl_print "[*INFO*] - finished installing github cli \n"
 }
 
-install_flatpak() {
-  cl_print "[*INFO*] - start installing flatpak ..."
+install_docker() {
+  cl_print "[*INFO*] - Start installing Docker ..."
 
-  sudo apt install -y flatpak
-  sudo apt install -y gnome-software-plugin-flatpak
-  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  unlock_sudo
 
-  cl_print "[*INFO*] - finished installing flatpak \n"
+  # Remove old versions if any
+  sudo apt remove -y docker docker-engine docker.io containerd runc
+
+  # Update package list and install prerequisites
+  sudo apt update
+  sudo apt install -y \
+      ca-certificates \
+      curl \
+      gnupg \
+      lsb-release
+
+  # Add Docker’s official GPG key
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+      sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+  # Set up the Docker repository
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  # Update and install Docker Engine, CLI, Containerd
+  sudo apt update
+  sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # Optional: allow current user to run Docker without sudo
+  sudo usermod -aG docker "$USER"
+
+  cl_print "[*INFO*] - Docker installation complete. Please log out and back in to apply group changes.\n"
 }
+
+
+install_obs() {
+  cl_print "[*INFO*] - start installing OBS Studio ..."
+
+  unlock_sudo
+  sudo add-apt-repository ppa:obsproject/obs-studio
+  sudo apt update
+  sudo apt install -y obs-studio
+
+  cl_print "[*INFO*] - finished installing OBS Studio \n"
+}
+
+
+install_celluloid() {
+  cl_print "[*INFO*] - Start installing Celluloid ..."
+
+  # Unlock sudo privilege
+  unlock_sudo
+  
+  # Add the PPA for Celluloid (gnome-mpv PPA)
+  cl_print "[*INFO*] - Adding the PPA repository ..."
+  sudo add-apt-repository -y ppa:xuzhen666/gnome-mpv
+
+  # Update package list after adding PPA
+  sudo apt update
+
+  # Install Celluloid from the PPA
+  sudo apt install -y celluloid
+
+  # Check if Celluloid is installed successfully
+  if command -v celluloid >/dev/null 2>&1; then
+    cl_print "[*INFO*] - Celluloid installed successfully" "green"
+  else
+    cl_print "[*ERROR*] - Celluloid installation failed" "red"
+    exit 1
+  fi
+
+  cl_print "[*INFO*] - Finished installing Celluloid \n"
+}
+
+install_ubuntu_cleaner() {
+  cl_print "[*INFO*] - Start installing Ubuntu Cleaner ..."
+
+  unlock_sudo
+  sudo apt install software-properties-common
+  sudo add-apt-repository ppa:gerardpuig/ppa
+  sudo apt update
+  sudo apt install -y ubuntu-cleaner
+
+  cl_print "[*INFO*] - Finished installing Ubuntu Cleaner \n"
+}
+
+install_telegram() {
+  cl_print "[*INFO*] - Start installing Telegram ..."
+
+  unlock_sudo
+  sudo add-apt-repository ppa:atareao/telegram
+  sudo apt update
+  sudo apt install -y telegram
+
+  cl_print "[*INFO*] - Finished installing Telegram \n"
+}
+
+install_extra_codec() {
+  cl_print "[*INFO*] - Start installing extra codecs ..." "cyan"
+
+  unlock_sudo
+
+  # Pre-accept Microsoft EULA for ttf-mscorefonts-installer
+  echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+
+  # Install without prompts
+  sudo apt install -y ubuntu-restricted-extras
+
+  cl_print "[*INFO*] - Finished installing extra codecs." "green"
+}
+
+install_appimage_launcher() {
+  cl_print "[*INFO*] - Start installing AppImageLauncher ..."
+
+  unlock_sudo
+
+  # Add the AppImageLauncher PPA
+  sudo add-apt-repository ppa:appimagelauncher-team/stable
+
+  # Update package list
+  sudo apt update
+
+  # Install AppImageLauncher
+  sudo apt install -y appimagelauncher
+
+  cl_print "[*INFO*] - Finished installing AppImageLauncher \n"
+}
+
+
+reduce_swappiness () {
+  cl_print "[*INFO*] - Start reducing swappiness ..."
+
+  # Create a custom sysctl config to reduce swappiness
+  sudo bash -c 'echo "vm.swappiness=10" > /etc/sysctl.d/99-swappiness.conf'
+
+  # Apply the new setting immediately
+  sudo sysctl --system
+
+  cl_print "[*INFO*] - Finished reducing swappiness \n"
+}
+
+
 
 launcher_main() {
     cl_print "[*INFO*] - start running UBUNTU DEJAVU all in one launcher ..."

@@ -17,6 +17,7 @@ Video_Codec_SDK_*/
 ## Files
 kite_tutorial.ipynb
 *.zip
+*.txt
 
 
 # Byte-compiled / optimized / DLL files

@@ -130,9 +130,8 @@ create_config_tool_apps_dir() {
     cl_print "[*INFO*] - '$folder_id' already registered in folder-children." "yellow"
   fi
 
-  cl_print "[*DONE*] - Config Tools folder created successfully." "green"
+  cl_print "[*DONE*] - Config Tools folder created successfully. \n" "green"
 }
-
 
 
 create_system_tool_apps_dir() {
@@ -194,7 +193,7 @@ create_system_tool_apps_dir() {
     cl_print "[*INFO*] - '$folder_id' already registered in folder-children." "yellow"
   fi
 
-  cl_print "[*DONE*] - System Tools folder created successfully." "green"
+  cl_print "[*DONE*] - System Tools folder created successfully. \n" "green"
 }
 
 
@@ -253,7 +252,7 @@ create_screen_recording_apps_dir() {
     cl_print "[*INFO*] - '$folder_id' already registered in folder-children." "yellow"
   fi
 
-  cl_print "[*DONE*] - Screen Recording Apps folder created successfully." "green"
+  cl_print "[*DONE*] - Screen Recording Apps folder created successfully. \n" "green"
 }
 
 

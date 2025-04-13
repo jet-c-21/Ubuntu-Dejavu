@@ -142,7 +142,7 @@ Pin-Priority: 1000
   # 6. Update your package list and install Firefox
   sudo apt update && sudo apt install -y firefox
 
-  cl_print "[*INFO*] - Firefox has been installed successfully." "green"
+  cl_print "[*INFO*] - Firefox has been installed by apt repo successfully. \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

@@ -77,19 +77,19 @@ install_brave() {
 
   if ! command -v curl &>/dev/null; then
     cl_print "[*INFO*] - Installing curl..." "cyan"
-    use_sudo apt install -y curl
+    sudo apt install -y curl
   fi
 
-  cl_print "[*INFO*] - Adding Brave repository and key..." "cyan"
+  sudo apt install curl
 
-  use_sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg \
-    https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+  sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
 
-  echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" \
-    | use_sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null
+  echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"|sudo tee /etc/apt/sources.list.d/brave-browser-release.list
 
-  use_sudo apt update
-  use_sudo apt install -y brave-browser
+  sudo apt update
+
+  sudo apt install -y brave-browser
+
 }
 
 main() {

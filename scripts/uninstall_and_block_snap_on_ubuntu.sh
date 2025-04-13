@@ -99,6 +99,7 @@ _purge_all_snap_apps_on_ubuntu_nobel_numbat() {
   # List of snaps to remove in the proper order
   local snaps_to_remove=(
     "firefox"
+    "thunderbird"
     "snap-store"
     "firmware-updater"
     "canonical-livepatch"

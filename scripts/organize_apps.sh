@@ -144,6 +144,7 @@ create_system_tool_apps_dir() {
     'gnome-system-monitor-kde.desktop'
     'htop.desktop'
     'gnome-system-monitor.desktop'
+    'gnome-system-panel.desktop'
     'gparted.desktop'
   )
 

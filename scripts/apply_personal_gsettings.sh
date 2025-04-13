@@ -157,10 +157,11 @@ change_click_window_to_minimize_to_dock() {
 
 enable_window_hover_show() {
   # Enable window preview on hover
-  gsettings set org.gnome.shell.extensions.dash-to-dock window-preview 'true'
+  gsettings set org.gnome.shell.extensions.dash-to-dock show-windows-preview true
   
   cl_print "[*INFO*] - Window hover preview enabled! \n" "green"
 }
+
 
 disable_recent_file_history() {
   gsettings set org.gnome.desktop.privacy remember-recent-files false

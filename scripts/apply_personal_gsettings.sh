@@ -147,8 +147,9 @@ change_dock_to_macos_style() {
 enable_auto_hide_dock() {
   local setting="org.gnome.shell.extensions.dash-to-dock dock-fixed"
   local value="false"
-  cl_print "[*INFO*] - Enabling auto-hide dock \n" "cyan"
   gsettings set ${setting} ${value}
+
+  cl_print "[*INFO*] - Enabling auto-hide dock \n" "cyan"
 }
 
 # Change click action for Dash-to-Dock
@@ -198,6 +199,9 @@ optimize_search_settings() {
 main() {
    change_appearance_color_to_dark_and_purple
    check_dash_to_dock_is_installed
+
+   sleep 600
+
    change_dock_to_macos_style
    enable_auto_hide_dock
    change_click_window_to_minimize_to_dock

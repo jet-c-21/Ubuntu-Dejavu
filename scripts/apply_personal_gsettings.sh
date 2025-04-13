@@ -86,15 +86,14 @@ change_appearance_color_to_dark_and_purple() {
 
 handle_dash_to_dock_to_be_installed() {
   local extension_uuid="dash-to-dock@micxgx.gmail.com"
-  local extension_dir="$HOME/.local/share/gnome-shell/extensions/$extension_uuid"
-  local zip_path="/tmp/dash-to-dock.zip"
-  local api_url="https://extensions.gnome.org/extension-info/"
-  local extension_id=307
-  local shell_version=$(gnome-shell --version | grep -oP '\d+\.\d+')
-
+  local extension_path="$HOME/.local/share/gnome-shell/extensions/$extension_uuid"
+  local zip_file="/tmp/dash-to-dock.zip"
+  local metadata_api_url="https://extensions.gnome.org/extension-info/?uuid=${extension_uuid}&shell_version=$(gnome-shell --version | grep -oP '[0-9]+\.[0-9]+')"
+  
   cl_print "[*INFO*] - Checking if Dash-to-Dock is already installed..." "cyan"
-  if [[ -d "$extension_dir" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock already exists at $extension_dir.\n" "cyan"
+
+  if [[ -d "$extension_path" ]]; then
+    cl_print "[*INFO*] - Dash-to-Dock already exists at $extension_path. \n" "cyan"
     return 0
   fi
 
@@ -102,34 +101,46 @@ handle_dash_to_dock_to_be_installed() {
   sudo apt install -y curl unzip jq
 
   cl_print "[*INFO*] - Fetching Dash-to-Dock download URL via GNOME API..." "cyan"
-  local json=$(curl -s "https://extensions.gnome.org/extension-info/?pk=$extension_id&shell_version=$shell_version")
-  local download_url=$(echo "$json" | jq -r '.download_url')
+  local download_url
+  download_url=$(curl -s "$metadata_api_url" | jq -r '.download_url')
 
   if [[ -z "$download_url" || "$download_url" == "null" ]]; then
-    cl_print "[*ERROR*] - Failed to fetch valid .zip URL from API." "red"
+    cl_print "[*ERROR*] - Failed to find valid Dash-to-Dock download URL." "red"
     return 1
   fi
 
   local full_url="https://extensions.gnome.org$download_url"
   cl_print "[*INFO*] - Downloading from: $full_url" "cyan"
-  curl -sSL -o "$zip_path" "$full_url"
+  curl -sSL -o "$zip_file" "$full_url"
 
-  if [[ ! -f "$zip_path" ]] || ! unzip -t "$zip_path" &>/dev/null; then
-    cl_print "[*ERROR*] - Invalid or corrupt zip archive." "red"
+  if [[ ! -f "$zip_file" ]] || ! unzip -t "$zip_file" &>/dev/null; then
+    cl_print "[*ERROR*] - Failed to download or validate Dash-to-Dock zip." "red"
     return 1
   fi
 
-  mkdir -p "$extension_dir"
-  unzip -o -q "$zip_path" -d "$extension_dir"
+  cl_print "[*INFO*] - Installing Dash-to-Dock to local extensions folder..." "cyan"
+  mkdir -p "$extension_path"
+  unzip -o -q "$zip_file" -d "$extension_path"
 
-  if [[ -f "$extension_dir/metadata.json" ]]; then
-    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_dir." "green"
-    gnome-extensions enable "$extension_uuid"
+  if [[ -f "$extension_path/metadata.json" ]]; then
+    cl_print "[*INFO*] - Dash-to-Dock installed successfully at $extension_path. \n" "cyan"
   else
     cl_print "[*ERROR*] - Dash-to-Dock installation failed." "red"
     return 1
   fi
+
+  # Wait briefly and try enabling the extension
+  sleep 2
+
+  if gnome-extensions list | grep -q "$extension_uuid"; then
+    gnome-extensions enable "$extension_uuid"
+    cl_print "[*INFO*] - Dash-to-Dock extension enabled." "green"
+  else
+    cl_print "[*WARN*] - Installed but not yet recognized by GNOME Shell." "yellow"
+    cl_print "[*TIP*] - Try restarting GNOME Shell (Alt+F2, then type 'r') or log out and back in." "yellow"
+  fi
 }
+
 
 
 

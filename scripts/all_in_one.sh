@@ -311,7 +311,7 @@ install_celluloid() {
     exit 1
   fi
 
-  cl_print "[*INFO*] - Finished installing Celluloid \n"
+  cl_print "[*INFO*] - Finished installing Celluloid \n" "green"
 }
 
 install_ubuntu_cleaner() {
@@ -323,7 +323,7 @@ install_ubuntu_cleaner() {
   sudo apt update
   sudo apt install -y ubuntu-cleaner
 
-  cl_print "[*INFO*] - Finished installing Ubuntu Cleaner \n"
+  cl_print "[*INFO*] - Finished installing Ubuntu Cleaner \n" "green"
 }
 
 install_telegram() {
@@ -334,16 +334,16 @@ install_telegram() {
   sudo apt update
   sudo apt install -y telegram
 
-  cl_print "[*INFO*] - Finished installing Telegram \n"
+  cl_print "[*INFO*] - Finished installing Telegram \n" "green"
 }
 
 install_appimage_launcher() {
-  cl_print "[*INFO*] - Start installing AppImageLauncher ..."
+  cl_print "[*INFO*] - Start installing AppImageLauncher from daily PPA..." "cyan"
 
   unlock_sudo
 
-  # Add the AppImageLauncher PPA
-  sudo add-apt-repository -y ppa:appimagelauncher-team/stable
+  # Add the working PPA (daily, supports noble)
+  sudo add-apt-repository -y ppa:appimagelauncher-team/daily
 
   # Update package list
   sudo apt update
@@ -351,8 +351,9 @@ install_appimage_launcher() {
   # Install AppImageLauncher
   sudo apt install -y appimagelauncher
 
-  cl_print "[*INFO*] - Finished installing AppImageLauncher \n"
+  cl_print "[*INFO*] - Finished installing AppImageLauncher via daily PPA \n" "green"
 }
+
 
 install_gstreamer() {
   cl_print "[*INFO*] - Start installing GStreamer ..."

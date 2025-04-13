@@ -208,7 +208,7 @@ optimize_search_settings() {
 
 main() {
    change_appearance_color_to_dark_and_purple
-   check_dash_to_dock_is_installed
+   handle_dash_to_dock_to_be_installed
 
    sleep 600
 

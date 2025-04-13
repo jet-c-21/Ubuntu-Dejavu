@@ -63,52 +63,12 @@ unlock_sudo() {
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
-install_barrier() {
-  cl_print "[*INFO*] - Start installing Barrier ..." "magenta"
-
-  unlock_sudo
-
-  # Update package list
-  sudo apt update
-
-  # Install Barrier
-  sudo apt install -y barrier
-
-  # Create a systemd service to ensure Barrier starts automatically at boot
-  cl_print "[*INFO*] - Creating systemd service for Barrier..." "yellow"
-
-  local username
-  username=$(logname)
-
-  # Create the systemd service file
-  sudo bash -c "cat > /etc/systemd/system/barrier.service <<EOF
-[Unit]
-Description=Barrier - Keyboard and Mouse Sharing
-After=graphical.target
-
-[Service]
-ExecStart=/usr/bin/barrier --no-tray
-Restart=always
-User=${username}
-Environment=DISPLAY=:0
-Environment=XAUTHORITY=/home/${username}/.Xauthority
-
-[Install]
-WantedBy=default.target
-EOF"
-
-  # Reload systemd, enable and start the service
-  sudo systemctl daemon-reexec
-  sudo systemctl daemon-reload
-  sudo systemctl enable barrier.service
-  sudo systemctl start barrier.service
-
-  cl_print "[*INFO*] - Barrier installed and systemd service created.\n" "green"
-}
+THIS_FILE_PATH="$(realpath "${BASH_SOURCE[0]}")"
+THIS_FILE_PARENT_DIR="$(dirname "$THIS_FILE_PATH")"
 
 main() {
-  install_barrier
+  source "${THIS_FILE_PARENT_DIR}/ubuntu_dejavu.sh"
+  install_useful_packages
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

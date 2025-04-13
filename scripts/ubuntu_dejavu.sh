@@ -165,13 +165,25 @@ do_apt_update_and_upgrade() {
   cl_print "[*INFO*] - finish basic update and upgrade \n" "green"
 }
 
-install_useful_packages() {
+install_nala_and_use_faster_server() {
   unlock_sudo
 
-  # --- good package manager utilities ---
+  # Add Nala repository
+  sudo add-apt-repository -y ppa:volian/nala
+
+  # Update package list
+  sudo apt update
+
+  # Install Nala
   sudo apt install -y nala
+
   sudo nala fetch --auto -y
+
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
+}
+
+install_useful_packages() {
+  unlock_sudo
 
   sudo apt update
   cl_print "[*INFO*] - finish `sudo apt update` from new server \n"
@@ -220,7 +232,7 @@ install_useful_packages() {
     gnupg ufw gufw
 
     # --- System monitoring ---
-    htop bpytop neofetch
+    libgtop-2.0-11 gir1.2-gtop-2.0 gir1.2-gda-5.0 gir1.2-gsound-1.0 nvtop htop bpytop neofetch
 
     # --- Personal preference utilities ---
     gnome-tweaks dconf-editor gnome-shell-extensions gnome-shell-extension-manager
@@ -610,6 +622,7 @@ launcher_main() {
     main
 
     do_apt_update_and_upgrade
+    install_nala_and_use_faster_server
     install_useful_packages
     install_pipx
     install_gnome_extensions_cli

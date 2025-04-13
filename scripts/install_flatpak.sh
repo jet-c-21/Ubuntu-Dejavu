@@ -66,6 +66,7 @@ unlock_sudo() {
 
 install_flatpak() {
   cl_print "[*INFO*] - start installing flatpak ..."
+  unlock_sudo
 
   sudo apt install -y flatpak
   sudo apt install -y gnome-software-plugin-flatpak

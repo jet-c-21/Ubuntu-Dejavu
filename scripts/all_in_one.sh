@@ -98,8 +98,8 @@ do_apt_update_and_upgrade() {
   cl_print "[*INFO*] - start `sudo apt install` ..."
   sudo apt install
 
-  cl_print "[*INFO*] - start `sudo apt ugrage -y` ..."
-  sudo apt ugrage -y
+  cl_print "[*INFO*] - start `sudo apt upgrade -y` ..."
+  sudo apt upgrade -y
 
   cl_print "[*INFO*] - finish basic update \n"
 }

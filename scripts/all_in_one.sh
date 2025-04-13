@@ -420,18 +420,18 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
-    main
+    # source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    # main
 
-    do_apt_update_and_upgrade
-    install_useful_packages
-    install_gstreamer
-    install_github_cli
-    install_docker
-    install_obs
-    install_celluloid
-    install_ubuntu_cleaner
-    install_telegram
+    # do_apt_update_and_upgrade
+    # install_useful_packages
+    # install_gstreamer
+    # install_github_cli
+    # install_docker
+    # install_obs
+    # install_celluloid
+    # install_ubuntu_cleaner
+    # install_telegram
     install_appimage_launcher
     install_extra_codec
 

@@ -477,6 +477,8 @@ launcher_main() {
     source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
     main
 
+    sleep 5
+
     reduce_swappiness
 
     unlock_sudo

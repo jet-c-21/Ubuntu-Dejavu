@@ -198,6 +198,9 @@ install_useful_packages() {
     # --- AppImage support ---
     libfuse2
 
+    # --- X11 utilities ---
+    xdotool xclip xsel xorg
+
     # --- File system and drive support ---
     ntfs-3g exfat-fuse
 
@@ -245,6 +248,33 @@ install_useful_packages() {
 
   cl_print "[*INFO*] - finish installing useful packages \n" "green"
 }
+
+install_pipx() {
+  unlock_sudo
+  sudo apt update
+  sudo apt install -y pipx
+
+  # Ensure pipx path is added for current user
+  pipx ensurepath
+  
+  # Optional: Enable global path usage for sudo/system scripts
+  sudo pipx ensurepath --global
+
+  # Refresh shell environment to apply PATH changes immediately
+  if [ -n "$ZSH_VERSION" ]; then
+    exec zsh
+  elif [ -n "$BASH_VERSION" ]; then
+    exec bash
+  else
+    exec $SHELL
+  fi
+}
+
+install_gnome_extensions_cli() {
+  pipx install gnome-extensions-cli --system-site-packages
+  cl_print "[*INFO*] - gnome-extensions-cli installed successfully \n" "green"
+}
+
 
 install_github_cli () {
   cl_print "[*INFO*] - start installing github cli ..."
@@ -581,6 +611,8 @@ launcher_main() {
 
     do_apt_update_and_upgrade
     install_useful_packages
+    install_pipx
+    install_gnome_extensions_cli
     install_gstreamer
     install_github_cli
     install_docker
@@ -648,6 +680,10 @@ launcher_main() {
     main
     
     source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
+    main
+
+    # * install gnome extensions by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_extensions.sh"
     main
 
     source "${THIS_FILE_PARENT_DIR}/organize_apps.sh"

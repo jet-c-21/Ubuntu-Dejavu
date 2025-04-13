@@ -225,25 +225,31 @@ install_github_cli () {
 }
 
 install_docker() {
-  cl_print "[*INFO*] - Start installing Docker ..."
+  cl_print "[*INFO*] - Start installing Docker ..." "cyan"
 
   unlock_sudo
 
-  # Remove old versions if any
-  sudo apt remove -y docker docker-engine docker.io containerd runc
+  # Remove old versions if they exist
+  local old_package_list=(docker docker-engine docker.io containerd runc)
+  for pkg in "${old_package_list[@]}"; do
+    if dpkg -l | grep -q "^ii  $pkg"; then
+      cl_print "[*INFO*] - Removing old package: $pkg" "yellow"
+      sudo apt remove -y "$pkg"
+    fi
+  done
 
   # Update package list and install prerequisites
   sudo apt update
   sudo apt install -y \
-      ca-certificates \
-      curl \
-      gnupg \
-      lsb-release
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
 
   # Add Docker’s official GPG key
   sudo install -m 0755 -d /etc/apt/keyrings
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-      sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
   # Set up the Docker repository
@@ -253,14 +259,19 @@ install_docker() {
     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-  # Update and install Docker Engine, CLI, Containerd
+  # Install Docker components
   sudo apt update
-  sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  sudo apt install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin
 
-  # Optional: allow current user to run Docker without sudo
+  # Optional: Add current user to docker group
   sudo usermod -aG docker "$USER"
 
-  cl_print "[*INFO*] - Docker installation complete. Please log out and back in to apply group changes.\n"
+  cl_print "[*INFO*] - Docker installation complete. Please log out and back in to apply group changes.\n" "green"
 }
 
 
@@ -392,14 +403,7 @@ launcher_main() {
 
     do_apt_update_and_upgrade
     install_useful_packages
-
-    cl_print "finish install useful packages \n" "yellow"
-    sleep 5
-
     install_gstreamer
-    cl_print "finish install gstreamer \n" "yellow"
-    sleep 5
-
     install_github_cli
     install_docker
     install_obs

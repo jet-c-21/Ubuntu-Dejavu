@@ -91,7 +91,7 @@ unlock_sudo() {
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-_purge_all_snap_apps_ubuntu_nobel_numbat() {
+_purge_all_snap_apps_on_ubuntu_nobel_numbat() {
   cl_print "[*INFO*] - Start purging default Snap apps on Ubuntu 24.04 Noble Numbat..."
 
   unlock_sudo
@@ -122,7 +122,7 @@ _purge_all_snap_apps_ubuntu_nobel_numbat() {
 }
 
 purge_all_snap_apps() {
-  _purge_all_snap_apps_ubuntu_nobel_numbat
+  _purge_all_snap_apps_on_ubuntu_nobel_numbat
 
   # Check if there are any Snap apps installed
   if snap list | grep -q -v "^Name"; then

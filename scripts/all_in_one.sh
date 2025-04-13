@@ -1,5 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
+# version: 0.0.1
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -217,7 +218,6 @@ install_useful_packages() {
       fonts-firacode                # Keep this line at the end of the list
 }
 
-
 install_github_cli () {
   cl_print "[*INFO*] - start installing github cli ..."
   unlock_sudo
@@ -285,7 +285,6 @@ install_obs() {
   cl_print "[*INFO*] - finished installing OBS Studio \n"
 }
 
-
 install_celluloid() {
   cl_print "[*INFO*] - Start installing Celluloid ..."
 
@@ -336,20 +335,6 @@ install_telegram() {
   cl_print "[*INFO*] - Finished installing Telegram \n"
 }
 
-install_extra_codec() {
-  cl_print "[*INFO*] - Start installing extra codecs ..." "cyan"
-
-  unlock_sudo
-
-  # Pre-accept Microsoft EULA for ttf-mscorefonts-installer
-  echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
-
-  # Install without prompts
-  sudo apt install -y ubuntu-restricted-extras
-
-  cl_print "[*INFO*] - Finished installing extra codecs." "green"
-}
-
 install_appimage_launcher() {
   cl_print "[*INFO*] - Start installing AppImageLauncher ..."
 
@@ -365,6 +350,20 @@ install_appimage_launcher() {
   sudo apt install -y appimagelauncher
 
   cl_print "[*INFO*] - Finished installing AppImageLauncher \n"
+}
+
+install_extra_codec() {
+  cl_print "[*INFO*] - Start installing extra codecs ..." "cyan"
+
+  unlock_sudo
+
+  # Pre-accept Microsoft EULA for ttf-mscorefonts-installer
+  echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+
+  # Install without prompts
+  sudo apt install -y ubuntu-restricted-extras
+
+  cl_print "[*INFO*] - Finished installing extra codecs." "green"
 }
 
 
@@ -384,9 +383,65 @@ reduce_swappiness () {
 
 launcher_main() {
     cl_print "[*INFO*] - start running UBUNTU DEJAVU all in one launcher ..."
-
-    source "${THIS_FILE_PARENT_DIR}/z_subscript_template.sh"
+    
+    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
     main
+
+    do_apt_update_and_upgrade
+    install_useful_packages
+
+    install_github_cli
+    install_docker
+    install_obs
+    install_celluloid
+    install_ubuntu_cleaner
+    install_telegram
+    install_appimage_launcher
+    install_extra_codec
+
+    # * install browsers by sub scripts    
+    source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
+    main
+
+    # * install IDE by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
+    main
+
+    # * install useful apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
+    main
+
+    # * install productivity tools by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_gnome_pomodoro.sh"
+    main
+
+    # * install flatpak and flathub apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
+    main
+    
+    # * update gnome settings
+    source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
+    main
+    
+    source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh.sh"
+    main
+
+    reduce_swappiness
 
     cl_print "[*INFO*] - finish running UBUNTU DEJAVU all in one launcher! \n"
 }

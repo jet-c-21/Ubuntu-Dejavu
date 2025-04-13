@@ -201,15 +201,38 @@ hide_trashcan_on_dock() {
   cl_print "[*INFO*] - Trashcan hidden on dock! \n" "green"
 }
 
+disable_dash_to_dock_overview_on_startup() {
+  # Disable Dash-to-Dock overview on startup
+  gsettings set org.gnome.shell.extensions.dash-to-dock disable-overview-on-startup true
+  cl_print "[*INFO*] - Dash-to-Dock overview disabled on startup! \n" "green"
+}
+
 optimize_search_settings() {
   cl_print "[*INFO*] - Optimizing GNOME search to only include Calculator and Settings..." "cyan"
 
-  # Enable only Calculator and Settings
-  gsettings set org.gnome.desktop.search-providers disabled \
-    "['org.gnome.Characters.desktop', 'org.gnome.clocks.desktop', 'org.gnome.Nautilus.desktop', 'gnome-terminal.desktop', 'org.gnome.seahorse.Application.desktop']"
+  local allowed=(
+    'gnome-calculator.desktop'
+    'gnome-control-center.desktop'
+  )
+
+  local disabled=(
+    'org.gnome.Nautilus.desktop'
+    'org.gnome.clocks.desktop'
+    'org.gnome.Characters.desktop'
+    'org.gnome.seahorse.Application.desktop'
+    'org.gnome.Calendar.desktop'
+    'gnome-terminal.desktop'
+    'org.gnome.Weather.Application.desktop'
+    'org.gnome.Software.desktop'
+  )
+
+  gsettings set org.gnome.desktop.search-providers enabled "['${allowed[*]}']"
+  gsettings set org.gnome.desktop.search-providers disabled "['${disabled[*]}']"
+  gsettings set org.gnome.desktop.search-providers sort-order "['${allowed[*]}']"
 
   cl_print "[*INFO*] - GNOME search results now limited to Calculator and Settings." "green"
 }
+
 
 
 main() {

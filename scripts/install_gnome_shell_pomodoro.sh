@@ -74,7 +74,7 @@ enable_gnome_shell_pomodoro_auto_start() {
   cat > "$desktop_file" <<EOF
 [Desktop Entry]
 Type=Application
-Exec=gnome-pomodoro
+Exec=bash -c "sleep 5 && gnome-pomodoro"
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true

@@ -152,7 +152,6 @@ pin_app_to_dock() {
 }
 
 
-
 do_apt_update_and_upgrade() {
   unlock_sudo
   
@@ -164,6 +163,7 @@ do_apt_update_and_upgrade() {
 
   cl_print "[*INFO*] - finish basic update and upgrade \n" "green"
 }
+
 
 install_nala_and_use_faster_server() {
   unlock_sudo
@@ -243,6 +243,9 @@ install_useful_packages() {
     # --- Camera ---
     gnome-snapshot
 
+    # --- Screenshot ---
+    flameshot
+
     # --- Screen Recording ---
     simplescreenrecorder
 
@@ -280,6 +283,8 @@ install_pipx() {
   else
     hash -r  # refresh PATH without restarting shell
   fi
+
+  cl_print "[*INFO*] - pipx installed successfully \n" "green"
 }
 
 install_gnome_extensions_cli() {
@@ -287,6 +292,13 @@ install_gnome_extensions_cli() {
   cl_print "[*INFO*] - gnome-extensions-cli installed successfully \n" "green"
 }
 
+install_change_folder_color_tool() {
+  unlock_sudo
+  sudo add-apt-repository -y ppa:costales/folder-color
+  sudo apt install -y folder-color
+
+  cl_print "[*INFO*] - Folder Color installed successfully \n" "green"
+}
 
 install_github_cli () {
   cl_print "[*INFO*] - start installing github cli ..."

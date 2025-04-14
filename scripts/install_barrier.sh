@@ -1,4 +1,6 @@
 #!/bin/bash
+# script_name: install_barrier.sh
+# version: 1.0.0
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -63,6 +65,40 @@ unlock_sudo() {
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+setup_barrier_autostart() {
+  cl_print "[*INFO*] - Creating Barrier (server mode) autostart setup..."
+
+  local autostart_dir="${HOME}/.config/autostart"
+  local barrier_desktop_path="${autostart_dir}/barrier.desktop"
+
+  # Ensure autostart directory exists
+  mkdir -p "${autostart_dir}"
+
+  # Create the barrier.desktop file directly
+  cat <<EOF > "${barrier_desktop_path}"
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/barrier
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Barrier
+Name=Barrier
+Comment[en_US]=run barrier
+Comment=run barrier
+EOF
+
+  # Set correct permissions
+  chmod +x "${barrier_desktop_path}"
+
+  # Validate setup
+  if [[ -f "${barrier_desktop_path}" && -x "${barrier_desktop_path}" ]]; then
+    cl_print "[*INFO*] - Barrier autostart setup successfully." "green"
+  else
+    cl_print "[*ERROR*] - Failed to set up Barrier autostart." "red"
+  fi
+}
+
 
 install_barrier() {
   cl_print "[*INFO*] - Start installing Barrier ..." "magenta"
@@ -75,40 +111,12 @@ install_barrier() {
   # Install Barrier
   sudo apt install -y barrier
 
-  # Create a systemd service to ensure Barrier starts automatically at boot
-  cl_print "[*INFO*] - Creating systemd service for Barrier..." "yellow"
-
-  local username
-  username=$(logname)
-
-  # Create the systemd service file
-  sudo bash -c "cat > /etc/systemd/system/barrier.service <<EOF
-[Unit]
-Description=Barrier - Keyboard and Mouse Sharing
-After=graphical.target
-
-[Service]
-ExecStart=/usr/bin/barrier --no-tray
-Restart=always
-User=${username}
-Environment=DISPLAY=:0
-Environment=XAUTHORITY=/home/${username}/.Xauthority
-
-[Install]
-WantedBy=default.target
-EOF"
-
-  # Reload systemd, enable and start the service
-  sudo systemctl daemon-reexec
-  sudo systemctl daemon-reload
-  sudo systemctl enable barrier.service
-  sudo systemctl start barrier.service
-
   cl_print "[*INFO*] - Barrier installed and systemd service created.\n" "green"
 }
 
 main() {
   install_barrier
+  setup_barrier_autostart
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

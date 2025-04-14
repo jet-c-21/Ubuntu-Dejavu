@@ -69,6 +69,7 @@ THIS_FILE_PARENT_DIR="$(dirname "$THIS_FILE_PATH")"
 main() {
   source "${THIS_FILE_PARENT_DIR}/ubuntu_dejavu.sh"
   install_useful_packages
+#  install_change_folder_color_tool
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

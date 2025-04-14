@@ -216,6 +216,9 @@ install_useful_packages() {
     # --- File system and drive support ---
     ntfs-3g exfat-fuse
 
+    # --- Nautilus file manager ---
+    python3-gi python3-nautilus gir1.2-nautilus-4.0 procps libjs-jquery
+
     # --- Network and file sharing ---
     samba-common-bin net-tools lsb-release curl wget git
 
@@ -530,29 +533,30 @@ install_teamviewer_full_client_by_deb_file() {
 # }
 
 
-install_anydesk() {
-  cl_print "[*INFO*] - Start installing AnyDesk ..."
+# install_anydesk() {
+#   # this ppa version will make fullscreen and resolution behavior weird
+#   cl_print "[*INFO*] - Start installing AnyDesk ..."
 
-  unlock_sudo
+#   unlock_sudo
 
-  # Add the AnyDesk GPG key
-  sudo apt update
-  sudo apt install -y ca-certificates curl apt-transport-https
-  sudo install -m 0755 -d /etc/apt/keyrings
+#   # Add the AnyDesk GPG key
+#   sudo apt update
+#   sudo apt install -y ca-certificates curl apt-transport-https
+#   sudo install -m 0755 -d /etc/apt/keyrings
   
-  sudo rm -f /etc/apt/keyrings/keys.anydesk.com.asc
-  sudo curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY -o /etc/apt/keyrings/keys.anydesk.com.asc
-  sudo chmod a+r /etc/apt/keyrings/keys.anydesk.com.asc
+#   sudo rm -f /etc/apt/keyrings/keys.anydesk.com.asc
+#   sudo curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY -o /etc/apt/keyrings/keys.anydesk.com.asc
+#   sudo chmod a+r /etc/apt/keyrings/keys.anydesk.com.asc
 
-  # Add the AnyDesk apt repository
-  echo "deb [signed-by=/etc/apt/keyrings/keys.anydesk.com.asc] https://deb.anydesk.com all main" | sudo tee /etc/apt/sources.list.d/anydesk-stable.list > /dev/null
+#   # Add the AnyDesk apt repository
+#   echo "deb [signed-by=/etc/apt/keyrings/keys.anydesk.com.asc] https://deb.anydesk.com all main" | sudo tee /etc/apt/sources.list.d/anydesk-stable.list > /dev/null
 
-  # Update apt caches and install the AnyDesk client
-  sudo apt update
-  sudo apt install -y anydesk
+#   # Update apt caches and install the AnyDesk client
+#   sudo apt update
+#   sudo apt install -y anydesk
 
-  cl_print "[*INFO*] - Finished installing AnyDesk \n" "green"
-}
+#   cl_print "[*INFO*] - Finished installing AnyDesk \n" "green"
+# }
 
 install_gstreamer() {
   cl_print "[*INFO*] - Start installing GStreamer ..."
@@ -594,6 +598,7 @@ reduce_swappiness () {
 
 prompt_reboot_notification() {
   local reboot_countdown_sec=10
+  local zenity_title="Ubuntu Dejavu"
 
   if command -v zenity &>/dev/null; then
     (
@@ -604,7 +609,7 @@ prompt_reboot_notification() {
           sleep 1
         done
       } | zenity --progress \
-           --title="Ubuntu Dejavu" \
+           --title="${zenity_title}" \
            --text="Preparing to reboot..." \
            --percentage=0 \
            --auto-close \
@@ -651,8 +656,8 @@ launcher_main() {
     install_teamviewer_full_client_by_deb_file
     pin_app_to_dock "com.teamviewer.TeamViewer.desktop"
 
-    install_anydesk
-    pin_app_to_dock "anydesk.desktop"
+    # install_anydesk
+    # pin_app_to_dock "anydesk.desktop"
 
     install_appimage_launcher
     install_extra_codec

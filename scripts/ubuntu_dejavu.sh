@@ -149,17 +149,17 @@ pin_app_to_dock() {
 
 
 do_apt_update_and_upgrade() {
-  cl_print "[*INFO*] - start basic update and upgrade ..."
+  cl_print "[*INFO*] - Starting basic package update and upgrade ..."
 
   unlock_sudo
-  
-  cl_print "[*INFO*] - start `sudo apt update` ..."
-  sudo apt update
 
-  cl_print "[*INFO*] - start `sudo apt upgrade -y` ..."
-  sudo apt upgrade -y
+  cl_print "[*INFO*] - Running \`sudo apt-get update\` ..."
+  sudo apt-get update
 
-  cl_print "[*INFO*] - finish basic update and upgrade \n" "green"
+  cl_print "[*INFO*] - Running \`sudo apt-get upgrade -y\` ..."
+  sudo apt-get upgrade -y
+
+  cl_print "[*INFO*] - Package update and upgrade complete. \n" "green"
 }
 
 

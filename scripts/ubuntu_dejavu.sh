@@ -44,24 +44,20 @@ cl_print() {
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ask user input sudo password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-echo "[*INFO*] - Please enter your sudo password:"
-read -s user_input_password
-
-verify_password() {
-  # Function to verify the sudo password
-  local password=$1
-  echo $password | sudo -S true 2>/dev/null
-  return $?
-}
-
-# Verify the password and assign it to the global variable SUDO_PWD
-SUDO_PASSWORD=""
-if verify_password "$user_input_password"; then
-  SUDO_PASSWORD=$user_input_password
-#   echo "Password is correct. Assigned to SUDO_PASSWORD variable."
-else
-  echo "[*ERROR*] - Incorrect password." >&2
-  exit 1
+if [[ -z "${SUDO_PASSWORD}" ]]; then
+  echo -n "[*INFO*] - Please enter your sudo password: "
+  read -s user_input_password
+  echo
+  verify_password() {
+    echo "$1" | sudo -S -v &>/dev/null
+  }
+  if verify_password "$user_input_password"; then
+    export SUDO_PASSWORD="$user_input_password"
+    echo "$SUDO_PASSWORD" | sudo -S -v &>/dev/null
+  else
+    echo "[*ERROR*] - Incorrect password." >&2
+    exit 1
+  fi
 fi
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ask user input sudo password <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -167,10 +163,7 @@ do_apt_update_and_upgrade() {
 
 install_nala_and_use_faster_server() {
   unlock_sudo
-
-  # Add Nala repository
-  sudo add-apt-repository -y ppa:volian/nala
-
+  
   # Update package list
   sudo apt update
 

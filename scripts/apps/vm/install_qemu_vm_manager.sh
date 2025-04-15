@@ -98,8 +98,8 @@ main() {
   sudo virsh net-start default || true
   sudo virsh net-autostart default
 
-  cl_print "[*INFO*] - Virtualization environment ready!" "green"
-  cl_print "[*NOTE*] - Please reboot or log out and log back in for group changes to take effect." "yellow"
+  cl_print "[*NOTE*] - Please reboot or log out and log back in for group changes to take effect." "cyan"
+  cl_print "[*INFO*] - Virtualization environment ready! \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

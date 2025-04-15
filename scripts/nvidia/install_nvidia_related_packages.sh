@@ -194,10 +194,10 @@ install_cudnn_on_host() {
 
 
 main() {
-  if ! check_nvidia_driver_is_installed; then
-    cl_print "[*WARN*] - NVIDIA driver is not installed. task aborted." "yellow"
-    return 0
-  fi
+  # if ! check_nvidia_driver_is_installed; then
+  #   cl_print "[*WARN*] - NVIDIA driver is not installed. task aborted." "yellow"
+  #   return 0
+  # fi
 
   install_nvidia_container_toolkit
   install_cuda_on_host

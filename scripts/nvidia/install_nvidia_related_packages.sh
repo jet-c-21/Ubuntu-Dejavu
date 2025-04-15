@@ -58,6 +58,17 @@ use_sudo() {
   eval "${cmd}"
 }
 
+check_nvidia_driver_is_installed() {
+  if ! command -v nvidia-smi &>/dev/null; then
+    cl_print "[*WARN*] - NVIDIA driver is not installed. Please install the NVIDIA driver first." "yellow"
+    return 1
+  fi
+
+  local nvidia_driver_version
+  nvidia_driver_version=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader)
+  cl_print "[*INFO*] - NVIDIA driver is installed, version: $nvidia_driver_version \n" "green"
+}
+
 unlock_sudo() {
   local result="$(use_sudo whoami)"
   cl_print "[*INFO*] - unlocked sudo for user: $result" "cyan"
@@ -114,34 +125,6 @@ install_cuda_on_host() {
 }
 
 
-install_cudnn_on_host() {
-  unlock_sudo
-  sudo apt update
-  sudo apt install -y zlib1g
-
-  # Prepare tmp location
-  local tmp_dir="/tmp/cudnn_installer"
-  local deb_file="cuda-keyring_1.1-1_all.deb"
-  mkdir -p "$tmp_dir"
-  cd "$tmp_dir"
-
-  # Download to tmp
-  wget "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/$deb_file"
-
-  # Install from tmp
-  sudo dpkg -i "$deb_file"
-  sudo apt update
-
-  # Install cudnn from NVIDIA repo
-  sudo apt -y install cudnn
-
-  # Clean up
-  cd ~
-  rm -rf "$tmp_dir"
-
-  cl_print "[*INFO*] - cuDNN installed successfully." "green"
-}
-
 update_shell_config_for_cuda() {
   CUDA_CONFIG_BLOCK='
 # >>>>>> add CUDA path >>>>>>
@@ -180,16 +163,35 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
   fi
 }
 
-check_nvidia_driver_is_installed() {
-  if ! command -v nvidia-smi &>/dev/null; then
-    cl_print "[*WARN*] - NVIDIA driver is not installed. Please install the NVIDIA driver first." "yellow"
-    return 1
-  fi
 
-  local nvidia_driver_version
-  nvidia_driver_version=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader)
-  cl_print "[*INFO*] - NVIDIA driver is installed, version: $nvidia_driver_version \n" "green"
+install_cudnn_on_host() {
+  unlock_sudo
+  sudo apt update
+  sudo apt install -y zlib1g
+
+  # Prepare tmp location
+  local tmp_dir="/tmp/cudnn_installer"
+  local deb_file="cuda-keyring_1.1-1_all.deb"
+  mkdir -p "$tmp_dir"
+  cd "$tmp_dir"
+
+  # Download to tmp
+  wget "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/$deb_file"
+
+  # Install from tmp
+  sudo dpkg -i "$deb_file"
+  sudo apt update
+
+  # Install cudnn from NVIDIA repo
+  sudo apt -y install cudnn
+
+  # Clean up
+  cd ~
+  rm -rf "$tmp_dir"
+
+  cl_print "[*INFO*] - cuDNN installed successfully." "green"
 }
+
 
 main() {
   if ! check_nvidia_driver_is_installed; then

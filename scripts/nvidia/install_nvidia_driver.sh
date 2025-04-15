@@ -1,4 +1,5 @@
 #!/bin/bash
+# script name: install_nvidia_driver.sh
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -63,20 +64,42 @@ unlock_sudo() {
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+install_nvidia_container_toolkit() {
+  # if nvidia dirver is not installed, log red message and return 1
 
-install_flatpak() {
-  cl_print "[*INFO*] - start installing flatpak ..."
   unlock_sudo
 
-  sudo apt install -y flatpak
-  sudo apt install -y gnome-software-plugin-flatpak
-  sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
-  cl_print "[*INFO*] - finished installing flatpak \n" "green"
+  sudo apt update
+  sudo apt install -y nvidia-container-toolkit
+
+  sudo nvidia-ctk runtime configure --runtime=docker
+  sudo systemctl restart docker
+
+  docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
+
+  cl_print "[*INFO*] - nvidia-container-toolkit installed successfully. \n" "green"
+}
+
+DESIERED_CUDA_VERSION="12.4"
+
+install_cuda_on_host() {
+  unlock_sudo
+
+  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+  sudo dpkg -i cuda-keyring_1.1-1_all.deb
+  sudo apt update
+  sudo apt install -y cuda-toolkit-12-4
 }
 
 main() {
-  install_flatpak
+#  install_nvidia_container_toolkit
+  install_cuda_on_host
+  cl_print "[*INFO*] - GPU supported CUDA version: $GPU_SUPPORTED_CUDA_VERSION" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

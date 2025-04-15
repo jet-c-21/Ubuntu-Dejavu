@@ -103,7 +103,7 @@ main() {
   sudo apt purge fcitx*
   sudo apt install -y fcitx5 fcitx5-chinese-addons fcitx5-chewing
 
-  cl_print "[*INFO*] - please click 確定, and select fcitx5 as input method" "cyan"
+  cl_print "[*INFO*] - please click yes, and select fcitx5 as input method" "cyan"
   im-config
 
   prompt_reboot_notification

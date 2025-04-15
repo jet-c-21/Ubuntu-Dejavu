@@ -96,9 +96,45 @@ install_cuda_on_host() {
   sudo apt install -y cuda-toolkit-12-4
 }
 
+update_shell_config_for_cuda() {
+  if [ -f "$HOME/.zshrc" ]; then
+    echo '
+
+# >>>>>> add CUDA path >>>>>>
+CUDA_VER=$(ls /usr/local | grep -oP 'cuda-\K\d+\.\d+' | tail -1)
+CUDA_BIN=/usr/local/cuda-$CUDA_VER/bin
+CUDA_LD_BIN=/usr/local/cuda-$CUDA_VER/lib64
+export PATH=$CUDA_BIN${PATH:+:$PATH}
+export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+# <<<<<< add CUDA path <<<<<<
+
+' >> "$HOME/.zshrc"
+
+    source "$HOME/.zshrc"
+  fi
+
+  if [ -f "$HOME/.bashrc" ]; then
+    echo '
+
+# >>>>>> add CUDA path >>>>>>
+CUDA_VER=$(ls /usr/local | grep -oP 'cuda-\K\d+\.\d+' | tail -1)
+CUDA_BIN=/usr/local/cuda-$CUDA_VER/bin
+CUDA_LD_BIN=/usr/local/cuda-$CUDA_VER/lib64
+export PATH=$CUDA_BIN${PATH:+:$PATH}
+export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+# <<<<<< add CUDA path <<<<<<
+
+' >> "$HOME/.bashrc"
+
+    source "$HOME/.bashrc"
+  fi
+}
+
+
 main() {
 #  install_nvidia_container_toolkit
   install_cuda_on_host
+  update_shell_config_for_cuda
   cl_print "[*INFO*] - GPU supported CUDA version: $GPU_SUPPORTED_CUDA_VERSION" "green"
 }
 

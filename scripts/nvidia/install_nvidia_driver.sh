@@ -90,10 +90,10 @@ DESIERED_CUDA_VERSION="12.4"
 install_cuda_on_host() {
   unlock_sudo
 
-  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
-  sudo dpkg -i cuda-keyring_1.1-1_all.deb
-  sudo apt update
-  sudo apt install -y cuda-toolkit-12-4
+  wget https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run
+  sudo sh cuda_12.4.0_550.54.14_linux.run -y
+
+  cl_print "[*INFO*] - CUDA installed successfully. \n" "green"
 }
 
 update_shell_config_for_cuda() {

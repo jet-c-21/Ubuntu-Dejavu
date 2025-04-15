@@ -97,7 +97,7 @@ add_custom_kb_shortcut() {
 
 main() {
   add_custom_kb_shortcut "Xkill" "xkill" "<Control>Escape" 0
-  add_custom_kb_shortcut "Flameshot GUI" "flameshot gui" "<Control>Print" 1
+  add_custom_kb_shortcut "Flameshot" "flameshot gui" "<Control>Print" 1
 
   cl_print "[*INFO*] - Custom keyboard shortcuts applied successfully. \n" "green"
 }

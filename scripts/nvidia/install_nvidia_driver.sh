@@ -65,10 +65,10 @@ unlock_sudo() {
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 install_nvidia_container_toolkit() {
-  # if nvidia dirver is not installed, log red message and return 1
+  # if NVIDIA driver is not installed, log red message and return 1
 
   unlock_sudo
-
+  sudo rm -rf /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
   curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
   && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
@@ -80,7 +80,12 @@ install_nvidia_container_toolkit() {
   sudo nvidia-ctk runtime configure --runtime=docker
   sudo systemctl restart docker
 
-  docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
+  # Check if user is in docker group
+  if groups "$USER" | grep -qw docker; then
+    docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
+  else
+    sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
+  fi
 
   cl_print "[*INFO*] - nvidia-container-toolkit installed successfully. \n" "green"
 }
@@ -90,40 +95,72 @@ DESIERED_CUDA_VERSION="12.4"
 install_cuda_on_host() {
   unlock_sudo
 
-  wget https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run
-  sudo sh cuda_12.4.0_550.54.14_linux.run -y
+  local tmp_dir="/tmp/cuda_installer"
+  local installer_name="cuda_12.4.0_550.54.14_linux.run"
+
+  mkdir -p "$tmp_dir"
+  cd "$tmp_dir"
+
+  wget "https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/$installer_name"
+  
+  # Run the installer with -silent and default options
+  sudo sh "$installer_name" --silent --toolkit
+  
+  # Optional: clean up
+  cd ~
+  rm -rf "$tmp_dir"
 
   cl_print "[*INFO*] - CUDA installed successfully. \n" "green"
 }
 
-update_shell_config_for_cuda() {
-  if [ -f "$HOME/.zshrc" ]; then
-    echo '
 
+install_cudnn_on_host() {
+  unlock_sudo
+  sudo apt update
+  sudo apt install -y zlib1g
+
+  # Prepare tmp location
+  local tmp_dir="/tmp/cudnn_installer"
+  local deb_file="cuda-keyring_1.1-1_all.deb"
+  mkdir -p "$tmp_dir"
+  cd "$tmp_dir"
+
+  # Download to tmp
+  wget "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/$deb_file"
+
+  # Install from tmp
+  sudo dpkg -i "$deb_file"
+  sudo apt update
+
+  # Install cudnn from NVIDIA repo
+  sudo apt -y install cudnn
+
+  # Clean up
+  cd ~
+  rm -rf "$tmp_dir"
+
+  cl_print "[*INFO*] - cuDNN installed successfully." "green"
+}
+
+update_shell_config_for_cuda() {
+  CUDA_CONFIG_BLOCK='
 # >>>>>> add CUDA path >>>>>>
-CUDA_VER=$(ls /usr/local | grep -oP '"'"'cuda-\K\d+\.\d+'"'"' | tail -1)
+CUDA_VER=$(ls /usr/local | grep -oP "cuda-\\K\\d+\\.\\d+" | tail -1)
 CUDA_BIN=/usr/local/cuda-$CUDA_VER/bin
 CUDA_LD_BIN=/usr/local/cuda-$CUDA_VER/lib64
 export PATH=$CUDA_BIN${PATH:+:$PATH}
 export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 # <<<<<< add CUDA path <<<<<<
 
-' >> "$HOME/.zshrc"
+'
+
+  if [ -f "$HOME/.zshrc" ]; then
+    echo "$CUDA_CONFIG_BLOCK" >> "$HOME/.zshrc"
     cl_print "[*INFO*] - CUDA path added to .zshrc" "cyan"
   fi
 
   if [ -f "$HOME/.bashrc" ]; then
-    echo '
-
-# >>>>>> add CUDA path >>>>>>
-CUDA_VER=$(ls /usr/local | grep -oP '"'"'cuda-\K\d+\.\d+'"'"' | tail -1)
-CUDA_BIN=/usr/local/cuda-$CUDA_VER/bin
-CUDA_LD_BIN=/usr/local/cuda-$CUDA_VER/lib64
-export PATH=$CUDA_BIN${PATH:+:$PATH}
-export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-# <<<<<< add CUDA path <<<<<<
-
-' >> "$HOME/.bashrc"
+    echo "$CUDA_CONFIG_BLOCK" >> "$HOME/.bashrc"
     cl_print "[*INFO*] - CUDA path added to .bashrc" "cyan"
   fi
 
@@ -145,9 +182,10 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 
 
 main() {
-#  install_nvidia_container_toolkit
-#  install_cuda_on_host
+  install_nvidia_container_toolkit
+  install_cuda_on_host
   update_shell_config_for_cuda
+  install_cudnn_on_host
   cl_print "[*INFO*] - GPU supported CUDA version: $GPU_SUPPORTED_CUDA_VERSION" "green"
 }
 

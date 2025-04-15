@@ -18,7 +18,8 @@ Video_Codec_SDK_*/
 kite_tutorial.ipynb
 *.zip
 *.txt
-
+*.deb
+*.run
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

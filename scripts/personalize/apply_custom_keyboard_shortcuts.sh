@@ -80,7 +80,8 @@ add_custom_kb_shortcut() {
 
   if [[ "$current_bindings" != *"custom${index}"* ]]; then
     if [[ "$current_bindings" =~ ^\[.*\]$ ]]; then
-      updated_bindings=$(echo "$current_bindings" | sed "s/]$/, '${new_entry}']/")
+      # Safely append to list using | as delimiter
+      updated_bindings=$(echo "$current_bindings" | sed "s|]$|, '${new_entry}']|")
     else
       updated_bindings="['${new_entry}']"
     fi

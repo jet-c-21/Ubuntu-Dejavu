@@ -1,5 +1,5 @@
 #!/bin/bash
-# script name: apply_personal_gsettings.sh
+# script name: apply_custom_keyboard_shortcuts.sh
 
 set -e
 
@@ -51,14 +51,7 @@ fi
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> use and unlock sudo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-use_sudo() { # it is a sudo experiment wrapper function, for most case please just use unlock_sudo
-  : <<COMMENT
-straight way:
-  echo "$SUDO_PASSWORD" | sudo -S your command
-example:
-  echo "$SUDO_PASSWORD" | sudo -S apt-get update
-COMMENT
-
+use_sudo() {
   local cmd="echo ${SUDO_PASSWORD} | sudo -SE "
   for param in "$@"; do
     cmd+="${param} "
@@ -74,28 +67,37 @@ unlock_sudo() {
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-add_xkill_kb_shortcut() {
-  cl_print "[*INFO*] - Adding custom keyboard shortcut for Xkill..." "cyan"
+add_custom_kb_shortcut() {
+  local name="$1"
+  local command="$2"
+  local binding="$3"
+  local index="$4"
 
   local keybinding_path="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
-  local new_entry="${keybinding_path}/custom0/"
+  local new_entry="${keybinding_path}/custom${index}/"
 
-  # Add the custom0 path to the list of keybindings if not already added
   current_bindings=$(dconf read "$keybinding_path")
-  if [[ "$current_bindings" != *"custom0"* ]]; then
-    dconf write "$keybinding_path" "['${new_entry}']"
+
+  if [[ "$current_bindings" != *"custom${index}"* ]]; then
+    if [[ "$current_bindings" =~ ^\[.*\]$ ]]; then
+      updated_bindings=$(echo "$current_bindings" | sed "s/]$/, '${new_entry}']/")
+    else
+      updated_bindings="['${new_entry}']"
+    fi
+    dconf write "$keybinding_path" "$updated_bindings"
   fi
 
-  # Set the actual custom shortcut settings
-  dconf write "${new_entry}name" "'Xkill'"
-  dconf write "${new_entry}command" "'xkill'"
-  dconf write "${new_entry}binding" "'<Control>Escape'"
+  dconf write "${new_entry}name" "'${name}'"
+  dconf write "${new_entry}command" "'${command}'"
+  dconf write "${new_entry}binding" "'${binding}'"
 
-  cl_print "[*INFO*] - Xkill shortcut <Ctrl+Escape> set successfully! \n" "green"
+  cl_print "[*INFO*] - Shortcut '${name}' set successfully! \n" "green"
 }
 
+
 main() {
-  add_xkill_kb_shortcut
+  add_custom_kb_shortcut "Xkill" "xkill" "<Control>Escape" 0
+  add_custom_kb_shortcut "Flameshot GUI" "flameshot gui" "<Control>Print" 1
 
   cl_print "[*INFO*] - Custom keyboard shortcuts applied successfully. \n" "green"
 }

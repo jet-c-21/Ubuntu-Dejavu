@@ -149,6 +149,8 @@ pin_app_to_dock() {
 
 
 do_apt_update_and_upgrade() {
+  cl_print "[*INFO*] - start basic update and upgrade ..."
+
   unlock_sudo
   
   cl_print "[*INFO*] - start `sudo apt update` ..."

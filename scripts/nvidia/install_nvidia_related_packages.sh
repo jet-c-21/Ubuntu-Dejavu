@@ -117,6 +117,7 @@ install_cuda_on_host() {
 
   wget "https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/$installer_name"
   
+  unlock_sudo
   # Run the installer with -silent and default options
   sudo sh "$installer_name" --silent --toolkit
   
@@ -160,7 +161,7 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 
   if command -v nvcc &>/dev/null; then
     CUDA_VER_INSTALLED=$(nvcc --version | grep -oP 'release \K[0-9]+\.[0-9]+')
-    cl_print "[*INFO*] - CUDA version: $CUDA_VER_INSTALLED, CUDA is installed on host\n" "green"
+    cl_print "[*INFO*] - CUDA version: $CUDA_VER_INSTALLED, CUDA is installed on host \n" "green"
   else
     cl_print "[*WARN*] - nvcc not found. CUDA may not be installed properly or not in PATH." "yellow"
   fi
@@ -180,7 +181,10 @@ install_cudnn_on_host() {
 
   # Download to tmp
   wget "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/$deb_file"
-
+  
+  unlock_sudo
+  
+  
   # Install from tmp
   sudo dpkg -i "$deb_file"
   sudo apt update
@@ -192,21 +196,26 @@ install_cudnn_on_host() {
   cd ~
   rm -rf "$tmp_dir"
 
-  cl_print "[*INFO*] - cuDNN installed successfully." "green"
+  cl_print "[*INFO*] - cuDNN installed successfully. \n" "green"
 }
 
+
+GPU_SUPPORTED_CUDA_VERSION="12.4" # this is depending on your host gpu by installed nvidia driver, check by rununing: nvidia-smi
 
 main() {
   if ! check_nvidia_driver_is_installed; then
     cl_print "[*WARN*] - NVIDIA driver is not installed. task aborted." "yellow"
     return 0
   fi
-
+  
+  cl_print "[*INFO*] - user specified GPU supported CUDA version: ${GPU_SUPPORTED_CUDA_VERSION}"
+  
   install_nvidia_container_toolkit
   install_cuda_on_host
   update_shell_config_for_cuda
   install_cudnn_on_host
-  cl_print "[*INFO*] - GPU supported CUDA version: $GPU_SUPPORTED_CUDA_VERSION" "green"
+  
+  cl_print "[*INFO*] - finish installed nvidia related packages \n" "green"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

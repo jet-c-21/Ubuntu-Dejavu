@@ -622,7 +622,6 @@ prompt_reboot_notification() {
   fi
 }
 
-
 launcher_main() {
     cl_print "[*INFO*] - start running UBUNTU DEJAVU all in one launcher ..."
     
@@ -711,8 +710,13 @@ launcher_main() {
 
     source "${THIS_FILE_PARENT_DIR}/organize_apps.sh"
     main
+    pin_app_to_dock "org.gnome.Settings.desktop"
+    pin_app_to_dock "gnome-terminal.desktop"
 
     reduce_swappiness
+
+    source "${THIS_FILE_PARENT_DIR}/nvidia/install_nvidia_related_packages.sh"
+    main
     
     prompt_reboot_notification
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# script name: install_nvidia_driver.sh
+# script name: install_nvidia_related_packages.sh
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -180,8 +180,23 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
   fi
 }
 
+check_nvidia_driver_is_installed() {
+  if ! command -v nvidia-smi &>/dev/null; then
+    cl_print "[*WARN*] - NVIDIA driver is not installed. Please install the NVIDIA driver first." "yellow"
+    return 1
+  fi
+
+  local nvidia_driver_version
+  nvidia_driver_version=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader)
+  cl_print "[*INFO*] - NVIDIA driver is installed, version: $nvidia_driver_version \n" "green"
+}
 
 main() {
+  if ! check_nvidia_driver_is_installed; then
+    cl_print "[*WARN*] - NVIDIA driver is not installed. task aborted." "yellow"
+    return 0
+  fi
+
   install_nvidia_container_toolkit
   install_cuda_on_host
   update_shell_config_for_cuda

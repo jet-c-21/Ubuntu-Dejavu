@@ -176,7 +176,7 @@ install_nala_and_use_faster_server() {
   sudo apt install -y nala
   cl_print "[*INFO*] - finish installed nala" "cyan"
 
-  sudo nala fetch --fallback --auto -y
+  sudo nala fetch --auto -y
 
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 }

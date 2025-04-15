@@ -236,6 +236,10 @@ install_useful_packages() {
     # --- System monitoring ---
     libgtop-2.0-11 gir1.2-gtop-2.0 gir1.2-gda-5.0 gir1.2-gsound-1.0 nvtop htop bpytop neofetch
 
+    # --- Backup tool ---
+    timeshift
+    luckybackup
+
     # --- Personal preference utilities ---
     gnome-tweaks dconf-editor gnome-shell-extensions gnome-shell-extension-manager
 

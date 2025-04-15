@@ -89,13 +89,16 @@ install_nvidia_container_toolkit() {
   sudo apt install -y nvidia-container-toolkit
 
   sudo nvidia-ctk runtime configure --runtime=docker
+  cl_print "[*INFO*] - updated nvidia-ctk runtime configure" "cyan"
+  
   sudo systemctl restart docker
+  cl_print "[*INFO*] - restarted docker" "cyan"
 
-  # Check if user is in docker group
-  if groups "$USER" | grep -qw docker; then
-    docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
+  # we assume docker might be installed in first time, so user might not re-login yet, so we put || true here
+  if groups "$USER" | grep -qw docker; then # Check if user is in docker group
+    docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi || true 
   else
-    sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
+    sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi || true
   fi
 
   cl_print "[*INFO*] - nvidia-container-toolkit installed successfully. \n" "green"

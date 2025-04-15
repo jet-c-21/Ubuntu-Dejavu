@@ -101,7 +101,7 @@ update_shell_config_for_cuda() {
     echo '
 
 # >>>>>> add CUDA path >>>>>>
-CUDA_VER=$(ls /usr/local | grep -oP 'cuda-\K\d+\.\d+' | tail -1)
+CUDA_VER=$(ls /usr/local | grep -oP '"'"'cuda-\K\d+\.\d+'"'"' | tail -1)
 CUDA_BIN=/usr/local/cuda-$CUDA_VER/bin
 CUDA_LD_BIN=/usr/local/cuda-$CUDA_VER/lib64
 export PATH=$CUDA_BIN${PATH:+:$PATH}
@@ -109,15 +109,14 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 # <<<<<< add CUDA path <<<<<<
 
 ' >> "$HOME/.zshrc"
-
-    source "$HOME/.zshrc"
+    cl_print "[*INFO*] - CUDA path added to .zshrc" "cyan"
   fi
 
   if [ -f "$HOME/.bashrc" ]; then
     echo '
 
 # >>>>>> add CUDA path >>>>>>
-CUDA_VER=$(ls /usr/local | grep -oP 'cuda-\K\d+\.\d+' | tail -1)
+CUDA_VER=$(ls /usr/local | grep -oP '"'"'cuda-\K\d+\.\d+'"'"' | tail -1)
 CUDA_BIN=/usr/local/cuda-$CUDA_VER/bin
 CUDA_LD_BIN=/usr/local/cuda-$CUDA_VER/lib64
 export PATH=$CUDA_BIN${PATH:+:$PATH}
@@ -125,15 +124,29 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 # <<<<<< add CUDA path <<<<<<
 
 ' >> "$HOME/.bashrc"
+    cl_print "[*INFO*] - CUDA path added to .bashrc" "cyan"
+  fi
 
+  if [ "$SHELL" = "/bin/zsh" ]; then
+    source "$HOME/.zshrc"
+  elif [ "$SHELL" = "/bin/bash" ]; then
     source "$HOME/.bashrc"
+  else
+    cl_print "[*WARN*] - Cannot auto-source CUDA config in unknown shell. Please restart your terminal." "yellow"
+  fi
+
+  if command -v nvcc &>/dev/null; then
+    CUDA_VER_INSTALLED=$(nvcc --version | grep -oP 'release \K[0-9]+\.[0-9]+')
+    cl_print "[*INFO*] - CUDA version: $CUDA_VER_INSTALLED, CUDA is installed on host\n" "green"
+  else
+    cl_print "[*WARN*] - nvcc not found. CUDA may not be installed properly or not in PATH." "yellow"
   fi
 }
 
 
 main() {
 #  install_nvidia_container_toolkit
-  install_cuda_on_host
+#  install_cuda_on_host
   update_shell_config_for_cuda
   cl_print "[*INFO*] - GPU supported CUDA version: $GPU_SUPPORTED_CUDA_VERSION" "green"
 }

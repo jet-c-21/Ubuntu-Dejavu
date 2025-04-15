@@ -117,8 +117,8 @@ enable_discord_auto_update() {
 }
 
 main() {
-  install_discord_apt
-  enable_discord_auto_update
+  # install_discord_apt
+  # enable_discord_auto_update
   
   cl_print "[*INFO*] - Discord Installation and auto-update setup completed. \n" "green"
 }

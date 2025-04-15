@@ -199,7 +199,7 @@ main() {
   #   return 0
   # fi
 
-  install_nvidia_container_toolkit
+  # install_nvidia_container_toolkit
   install_cuda_on_host
   update_shell_config_for_cuda
   install_cudnn_on_host

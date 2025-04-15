@@ -627,7 +627,7 @@ launcher_main() {
     
     change_power_to_performance_settings
 
-    source "${THIS_FILE_PARENT_DIR}/uninstall_and_block_snap_on_ubuntu.sh"
+    source "${THIS_FILE_PARENT_DIR}/snap/uninstall_and_block_snap_on_ubuntu.sh"
     main
 
     do_apt_update_and_upgrade
@@ -655,60 +655,63 @@ launcher_main() {
     install_extra_codec
 
     # * install browsers by sub scripts    
-    source "${THIS_FILE_PARENT_DIR}/install_firefox_by_apt_repo.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/browser/install_firefox_by_apt_repo.sh"
     main
     pin_app_to_dock "firefox.desktop"
 
-    source "${THIS_FILE_PARENT_DIR}/install_brave_by_apt_repo.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/browser/install_brave_by_apt_repo.sh"
     main
     pin_app_to_dock "brave-browser.desktop"
 
-    source "${THIS_FILE_PARENT_DIR}/install_chrome_by_apt_repo.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/browser/install_chrome_by_apt_repo.sh"
     main
     pin_app_to_dock "google-chrome.desktop"
 
     # * install IDE by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_sublime_text_by_apt_repo.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/ide/install_sublime_text_by_apt_repo.sh"
     main
     pin_app_to_dock "sublime_text.desktop"
 
-    source "${THIS_FILE_PARENT_DIR}/install_vscode_by_apt_repo.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/ide/install_vscode_by_apt_repo.sh"
     main
     pin_app_to_dock "code.desktop"
 
     # * install useful apps by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_discord_with_auto_update.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/communicate/install_discord_with_auto_update.sh"
     main
     pin_app_to_dock "discord.desktop"
 
-    source "${THIS_FILE_PARENT_DIR}/install_barrier.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/utility/install_barrier.sh"
     main
 
     # * install productivity tools by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_gnome_shell_pomodoro.sh"
+    source "${THIS_FILE_PARENT_DIR}/desktop/gnome/install_gnome_shell_pomodoro.sh"
     main
     pin_app_to_dock "org.gnome.Pomodoro.desktop"
 
-    # * install flatpak and flathub apps by sub scripts
-    source "${THIS_FILE_PARENT_DIR}/install_flatpak.sh"
+    source "${THIS_FILE_PARENT_DIR}/apps/vm/install_qemu_vm_manager.sh"
     main
 
-    source "${THIS_FILE_PARENT_DIR}/install_flathub_apps.sh"
+    # * install flatpak and flathub apps by sub scripts
+    source "${THIS_FILE_PARENT_DIR}/flatpak/install_flatpak.sh"
+    main
+
+    source "${THIS_FILE_PARENT_DIR}/flatpak/install_flathub_apps.sh"
     main
     pin_app_to_dock "com.bitwarden.desktop.desktop" # it really name like this
     
     # * update gnome settings
-    source "${THIS_FILE_PARENT_DIR}/apply_custom_keyboard_shortcuts.sh"
+    source "${THIS_FILE_PARENT_DIR}/personalize/apply_custom_keyboard_shortcuts.sh"
     main
     
-    source "${THIS_FILE_PARENT_DIR}/apply_personal_gsettings.sh"
+    source "${THIS_FILE_PARENT_DIR}/personalize/apply_personal_gsettings.sh"
     main
 
     # # * install gnome extensions by sub scripts
-    # source "${THIS_FILE_PARENT_DIR}/install_gnome_extensions.sh"
+    # source "${THIS_FILE_PARENT_DIR}/desktop/gnome/install_gnome_extensions.sh"
     # main
 
-    source "${THIS_FILE_PARENT_DIR}/organize_apps.sh"
+    source "${THIS_FILE_PARENT_DIR}/personalize/organize_apps.sh"
     main
     pin_app_to_dock "org.gnome.Settings.desktop"
     pin_app_to_dock "gnome-terminal.desktop"

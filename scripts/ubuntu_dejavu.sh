@@ -164,15 +164,19 @@ do_apt_update_and_upgrade() {
 
 
 install_nala_and_use_faster_server() {
+  cl_print "[*INFO*] - installing nala ..."
+
   unlock_sudo
   
   # Update package list
-  sudo apt update
+  sudo apt-get update
+  cl_print "[*INFO*] - finish apt-get update" "cyan"
 
   # Install Nala
   sudo apt install -y nala
+  cl_print "[*INFO*] - finish installed nala" "cyan"
 
-  sudo nala fetch --auto -y
+  sudo nala fetch --fallback --auto -y
 
   cl_print "[*INFO*] - finish installing nala and setting faster server for downloading \n"
 }

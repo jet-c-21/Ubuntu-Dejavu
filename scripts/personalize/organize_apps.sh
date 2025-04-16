@@ -140,6 +140,7 @@ create_system_tool_apps_dir() {
   local apps_to_add=(
     'synaptic.desktop'
     'org.bleachbit.BleachBit.desktop'
+    'bleachbit-root.desktop'
     'ubuntu-cleaner.desktop'
     'gnome-system-monitor-kde.desktop'
     'htop.desktop'

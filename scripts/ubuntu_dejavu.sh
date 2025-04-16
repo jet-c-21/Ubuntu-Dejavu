@@ -293,6 +293,14 @@ install_pipx() {
   cl_print "[*INFO*] - pipx installed successfully \n" "green"
 }
 
+install_ruff() {
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  cl_print "[*INFO*] - installed uv successfully" "cyan"
+
+  uv tool install ruff@latest
+  cl_print "[*INFO*] - installed ruff successfully \n" "green"
+}
+
 install_gnome_extensions_cli() {
   pipx install gnome-extensions-cli --system-site-packages
   cl_print "[*INFO*] - gnome-extensions-cli installed successfully \n" "green"
@@ -644,6 +652,7 @@ launcher_main() {
     install_nala_and_use_faster_server
     install_useful_packages
     install_pipx
+    install_ruff
     install_gnome_extensions_cli
     install_gstreamer
     install_github_cli

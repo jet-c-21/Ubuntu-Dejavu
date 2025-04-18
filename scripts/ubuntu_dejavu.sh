@@ -249,6 +249,9 @@ install_useful_packages() {
     # --- Weather ---
     gnome-weather
 
+    # --- Screensaver ---
+    xscreensaver xscreensaver-gl-extra xscreensaver-data-extra mpv
+
     # --- Camera ---
     gnome-snapshot
 

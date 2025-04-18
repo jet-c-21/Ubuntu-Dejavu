@@ -8,8 +8,16 @@ Tired of the same Ubuntu setup déjà vu over and over? Ubuntu-Dejavu is what yo
 - `Emoji Copy`
 - `TopHat`
 - `NVIDIA GPU Stats Tool`
-- `Pano - Clipboard Manager` (not support on ubuntu 24.04 yet)
+- `Pano - Clipboard Manager` (not support on ubuntu 24.04 yet, you have to install alpha version from their github)
 - `No overview at start-up`
+- `Weather O'Clock`
+- `Compiz windows effect`
+- `Compiz alike magic lamp effect`
+- `Desktop Cube`
+- `Wiggle`
+- `Burn My Windows`: choose `Apparition`, `Glide`, and `Mushroom` effects
+- `OpenWeather Refined`
+- `Status Area Horizontal Spacing`
 
 
 # VMWare Workstation

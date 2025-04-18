@@ -1,6 +1,4 @@
 #!/bin/bash
-# script name: apply_custom_keyboard_shortcuts.sh
-
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -60,48 +58,25 @@ use_sudo() {
 }
 
 unlock_sudo() {
-  local command="whoami"
-  local result="$(use_sudo "$command")"
-  echo "[*INFO*] - unlock $result privilege"
+  local result="$(use_sudo whoami)"
+  cl_print "[*INFO*] - unlocked sudo for user: $result" "cyan"
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-add_custom_kb_shortcut() {
-  local name="$1"
-  local command="$2"
-  local binding="$3"
-  local index="$4"
 
-  local keybinding_path="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
-  local new_entry="${keybinding_path}/custom${index}/"
 
-  current_bindings=$(dconf read "$keybinding_path")
+install_gnome_ext_hanabi_on_nobel_numbat() {
+  cl_print "[*INFO*] - Installing gnome-shell-pomodoro..." "cyan"
+  unlock_sudo
 
-  if [[ "$current_bindings" != *"custom${index}"* ]]; then
-    if [[ "$current_bindings" =~ ^\[.*\]$ ]]; then
-      # Safely append to list using | as delimiter
-      updated_bindings=$(echo "$current_bindings" | sed "s|]$|, '${new_entry}']|")
-    else
-      updated_bindings="['${new_entry}']"
-    fi
-    dconf write "$keybinding_path" "$updated_bindings"
-  fi
+  sudo apt-get install -y gnome-shell-pomodoro
 
-  dconf write "${new_entry}name" "'${name}'"
-  dconf write "${new_entry}command" "'${command}'"
-  dconf write "${new_entry}binding" "'${binding}'"
-
-  cl_print "[*INFO*] - Shortcut '${name}' set successfully! \n" "green"
+  cl_print "[*INFO*] - gnome-shell-pomodoro installed successfully! \n" "green"
 }
 
-
 main() {
-  add_custom_kb_shortcut "Xkill" "xkill" "<Control>Escape" 0
-  add_custom_kb_shortcut "Flameshot" "flameshot gui" "<Control>Print" 1
-  add_custom_kb_shortcut "XScreenSaver" "xscreensaver-command -activate" "<Super>Pause" 2
-
-  cl_print "[*INFO*] - Custom keyboard shortcuts applied successfully. \n" "green"
+  install_gnome_ext_hanabi
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

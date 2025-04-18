@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: all_in_one.sh
-# version: 1.0.0
+# version: 1.0.1
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -229,6 +229,9 @@ install_useful_packages() {
 
     # --- Terminal utilities ---
     tmux tree bash-completion fzf ripgrep
+
+    # --- Remote desktop ---
+    remmina remmina-plugin-vnc remmina-plugin-rdp
 
     # --- Security ---
     gnupg ufw gufw
@@ -544,31 +547,6 @@ install_teamviewer_full_client_by_deb_file() {
 # }
 
 
-# install_anydesk() {
-#   # this ppa version will make fullscreen and resolution behavior weird
-#   cl_print "[*INFO*] - Start installing AnyDesk ..."
-
-#   unlock_sudo
-
-#   # Add the AnyDesk GPG key
-#   sudo apt update
-#   sudo apt install -y ca-certificates curl apt-transport-https
-#   sudo install -m 0755 -d /etc/apt/keyrings
-  
-#   sudo rm -f /etc/apt/keyrings/keys.anydesk.com.asc
-#   sudo curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY -o /etc/apt/keyrings/keys.anydesk.com.asc
-#   sudo chmod a+r /etc/apt/keyrings/keys.anydesk.com.asc
-
-#   # Add the AnyDesk apt repository
-#   echo "deb [signed-by=/etc/apt/keyrings/keys.anydesk.com.asc] https://deb.anydesk.com all main" | sudo tee /etc/apt/sources.list.d/anydesk-stable.list > /dev/null
-
-#   # Update apt caches and install the AnyDesk client
-#   sudo apt update
-#   sudo apt install -y anydesk
-
-#   cl_print "[*INFO*] - Finished installing AnyDesk \n" "green"
-# }
-
 install_gstreamer() {
   cl_print "[*INFO*] - Start installing GStreamer ..."
 
@@ -660,6 +638,13 @@ launcher_main() {
     install_obs
     install_celluloid
     install_ubuntu_cleaner
+
+    # pin default apps to dock
+    pin_app_to_dock "org.gnome.Settings.desktop"
+    pin_app_to_dock "gnome-terminal.desktop"
+
+    # pin some apps installed by above functions
+    pin_app_to_dock "org.remmina.Remmina.desktop"
     
     install_telegram
     pin_app_to_dock "telegram.desktop"
@@ -732,8 +717,6 @@ launcher_main() {
 
     source "${THIS_FILE_PARENT_DIR}/personalize/organize_apps.sh"
     main
-    pin_app_to_dock "org.gnome.Settings.desktop"
-    pin_app_to_dock "gnome-terminal.desktop"
 
     reduce_swappiness
 

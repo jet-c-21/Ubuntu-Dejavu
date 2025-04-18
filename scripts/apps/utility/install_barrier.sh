@@ -65,6 +65,15 @@ unlock_sudo() {
 }
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+create_barrier_ssl_certification() {
+  mkdir -p ~/.local/share/barrier/SSL
+  openssl req -x509 -nodes -newkey rsa:2048 \
+    -keyout ~/.local/share/barrier/SSL/Barrier.pem \
+    -out ~/.local/share/barrier/SSL/Barrier.pem \
+    -days 365 \
+    -subj "/CN=$(hostname)"
+}
+
 setup_barrier_autostart() {
   cl_print "[*INFO*] - Creating Barrier (server mode) autostart setup..."
 

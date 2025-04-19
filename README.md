@@ -18,6 +18,7 @@ Tired of the same Ubuntu setup déjà vu over and over? Ubuntu-Dejavu is what yo
 - `Burn My Windows`: choose `Apparition`, `Glide`, and `Mushroom` effects
 - `OpenWeather Refined`
 - `Status Area Horizontal Spacing`
+- `GSConnect`
 
 
 # VMWare Workstation

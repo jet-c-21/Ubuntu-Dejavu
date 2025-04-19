@@ -66,67 +66,26 @@ unlock_sudo() {
 
 
 
-install_gnome_ext_hanabi_on_nobel_numbat() {
-  cl_print "[*INFO*] - Installing gnome ext hanabi on nobel numbat ..." "cyan"
+install_steam() {
+  cl_print "[*INFO*] - Installing Steam..." "blue"
+
   unlock_sudo
 
-  # Essential tools
-  sudo apt install -y git meson
+  # ref: https://www.ubuntuupdates.org/ppa/steam
+  sudo apt update
+  sudo apt install -y software-properties-common apt-transport-https ca-certificates curl
 
-  # GTK4 and related media support
-  sudo apt install -y libgtk-4-dev libgtk-4-media-gstreamer libadwaita-1-dev
+  # Add Steam PPA (Note: this PPA is unofficial and maintained by ubuntuupdates.org)
+  sudo add-apt-repository -y ppa:ubuntu-desktop/ubuntu-make
 
-  # GStreamer core and plugin development libraries
-  sudo apt install -y \
-    libgstreamer1.0-dev \
-    libgstreamer-plugins-base1.0-dev \
-    libgstreamer-plugins-good1.0-dev \
-    libgstreamer-plugins-bad1.0-dev
+  sudo apt update
+  sudo apt install -y steam
 
-  # GStreamer runtime plugins (base, good, bad, ugly, libav, gl)
-  sudo apt install -y \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    gstreamer1.0-plugins-ugly \
-    gstreamer1.0-libav \
-    gstreamer1.0-gl
-
-  # GObject Introspection bindings for GStreamer (for GNOME extensions)
-  sudo apt install -y \
-    gir1.2-gst-plugins-base-1.0 \
-    gir1.2-gst-plugins-bad-1.0
-
-  # GNOME plugin system
-  sudo apt install -y libpeas-2-dev
-
-  # Build & install
-  cd /tmp
-  rm -rf clapper
-  git clone https://github.com/Rafostar/clapper.git
-  cd clapper
-  meson setup build --prefix=/usr \
-      -Dgst-plugin=enabled \
-      -Dglimporter=enabled \
-      -Dgluploader=enabled \
-      -Drawimporter=enabled
-  cd build
-  meson compile
-  sudo meson install
-
-  cl_print "[*INFO*] - clapper installed successfully!" "cyan"
-
-  # install hanabi
-  cd /tmp
-  git clone https://github.com/jeffshee/gnome-ext-hanabi.git
-  cd gnome-ext-hanabi
-  ./run.sh install
-
-  cl_print "[*INFO*] - gnome ext hanabi on nobel numbat installed successfully, please restart GNOME Shell and enable Hanabi extension! \n" "green"
+  cl_print "[*INFO*] - Steam installed successfully!" "green"
 }
 
 main() {
-  install_gnome_ext_hanabi_on_nobel_numbat
+  install_steam
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

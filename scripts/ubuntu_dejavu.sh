@@ -219,7 +219,7 @@ install_useful_packages() {
     python3-gi python3-nautilus gir1.2-nautilus-4.0 procps libjs-jquery
 
     # --- Network and file sharing ---
-    samba-common-bin net-tools lsb-release curl wget git
+    samba samba-common-bin net-tools lsb-release curl wget git
 
     # --- Media support (full GStreamer stack) ---
     gnome-sushi

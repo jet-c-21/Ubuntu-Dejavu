@@ -216,7 +216,7 @@ install_useful_packages() {
     ntfs-3g exfat-fuse
 
     # --- Nautilus file manager ---
-    python3-gi python3-nautilus gir1.2-nautilus-4.0 procps libjs-jquery
+    #python3-gi python3-nautilus gir1.2-nautilus-4.0 procps libjs-jquery # for ubuntu 24.04
 
     # --- Network and file sharing ---
     samba samba-common-bin net-tools lsb-release curl wget git
@@ -253,7 +253,7 @@ install_useful_packages() {
     xscreensaver xscreensaver-gl-extra xscreensaver-data-extra mpv
 
     # --- Camera ---
-    gnome-snapshot
+    # gnome-snapshot # for ubuntu 24.04
 
     # --- Screenshot ---
     flameshot
@@ -303,7 +303,16 @@ install_ruff() {
   curl -LsSf https://astral.sh/uv/install.sh | sh
   cl_print "[*INFO*] - installed uv successfully" "cyan"
 
-  uv tool install ruff@latest
+  # Refresh shell environment to apply PATH changes immediately
+  if [ -n "$ZSH_VERSION" ]; then
+    source ~/.zshrc
+  elif [ -n "$BASH_VERSION" ]; then
+    source ~/.bashrc
+  else
+    hash -r  # refresh PATH without restarting shell
+  fi
+  
+  uv tool install ruff@latest # TODO: add which uv path handle for ubuntu 22.04 support
   cl_print "[*INFO*] - installed ruff successfully \n" "green"
 }
 
@@ -630,7 +639,7 @@ launcher_main() {
     main
 
     do_apt_update_and_upgrade
-    install_nala_and_use_faster_server
+#    install_nala_and_use_faster_server
     install_useful_packages
     install_pipx
     install_ruff

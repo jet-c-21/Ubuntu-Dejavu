@@ -302,17 +302,8 @@ install_pipx() {
 install_ruff() {
   curl -LsSf https://astral.sh/uv/install.sh | sh
   cl_print "[*INFO*] - installed uv successfully" "cyan"
-
-  # Refresh shell environment to apply PATH changes immediately
-  if [ -n "$ZSH_VERSION" ]; then
-    source ~/.zshrc
-  elif [ -n "$BASH_VERSION" ]; then
-    source ~/.bashrc
-  else
-    hash -r  # refresh PATH without restarting shell
-  fi
   
-  uv tool install ruff@latest # TODO: add which uv path handle for ubuntu 22.04 support
+  "$(which uv)" tool install ruff@latest
   cl_print "[*INFO*] - installed ruff successfully \n" "green"
 }
 

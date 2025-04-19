@@ -168,7 +168,7 @@ export LD_LIBRARY_PATH=$CUDA_LD_BIN${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 }
 
 
-install_cudnn_on_host() {
+install_cudnn_on_nobel_numbat() {
   unlock_sudo
   sudo apt update
   sudo apt install -y zlib1g
@@ -181,6 +181,37 @@ install_cudnn_on_host() {
 
   # Download to tmp
   wget "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/$deb_file"
+  
+  unlock_sudo
+  
+  
+  # Install from tmp
+  sudo dpkg -i "$deb_file"
+  sudo apt update
+
+  # Install cudnn from NVIDIA repo
+  sudo apt -y install cudnn
+
+  # Clean up
+  cd ~
+  rm -rf "$tmp_dir"
+
+  cl_print "[*INFO*] - cuDNN installed successfully. \n" "green"
+}
+
+install_cudnn_on_jammy_jellyfish() {
+  unlock_sudo
+  sudo apt update
+  sudo apt install -y zlib1g
+
+  # Prepare tmp location
+  local tmp_dir="/tmp/cudnn_installer"
+  local deb_file="cuda-keyring_1.1-1_all.deb"
+  mkdir -p "$tmp_dir"
+  cd "$tmp_dir"
+
+  # Download to tmp
+  wget "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/$deb_file"
   
   unlock_sudo
   
@@ -213,7 +244,7 @@ main() {
   install_nvidia_container_toolkit
   install_cuda_on_host
   update_shell_config_for_cuda
-  install_cudnn_on_host
+  install_cudnn_on_jammy_jellyfish
   
   cl_print "[*INFO*] - finish installed nvidia related packages \n" "green"
 }

@@ -276,34 +276,27 @@ install_useful_packages() {
   cl_print "[*INFO*] - finish installing useful packages \n" "green"
 }
 
-install_pipx() {
-  unlock_sudo
-  sudo apt update
-  sudo apt install -y pipx
+install_ruff() {
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  cl_print "[*INFO*] - installed uv successfully" "cyan"
 
-  # Ensure pipx path is added for current user
-  pipx ensurepath
-  
-  # Optional: Enable global path usage for sudo/system scripts
-  sudo pipx ensurepath
+  # Get Ubuntu version from system
+  local ubuntu_version=$(lsb_release -rs)
 
-  # Refresh shell environment to apply PATH changes immediately
-  if [ -n "$ZSH_VERSION" ]; then
-    source ~/.zshrc
-  elif [ -n "$BASH_VERSION" ]; then
-    source ~/.bashrc
+  if [[ "$ubuntu_version" == "22.04" ]]; then
+    ~/.local/bin/uv tool install ruff@latest
   else
-    hash -r  # refresh PATH without restarting shell
+    uv tool install ruff@latest
   fi
 
-  cl_print "[*INFO*] - pipx installed successfully \n" "green"
+  cl_print "[*INFO*] - installed ruff successfully \n" "green"
 }
 
 install_ruff() {
   curl -LsSf https://astral.sh/uv/install.sh | sh
   cl_print "[*INFO*] - installed uv successfully" "cyan"
   
-  "$(which uv)" tool install ruff@latest
+  ~/.local/bin/uv tool install ruff@latest # if ubunut == 22.04
   cl_print "[*INFO*] - installed ruff successfully \n" "green"
 }
 
@@ -630,7 +623,7 @@ launcher_main() {
     main
 
     do_apt_update_and_upgrade
-#    install_nala_and_use_faster_server
+    install_nala_and_use_faster_server
     install_useful_packages
     install_pipx
     install_ruff

@@ -1,6 +1,6 @@
 #!/bin/bash
-# script name: all_in_one.sh
-# version: 1.0.1
+# script name: ubuntu_dejavu.sh
+# version: 1.0.2
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

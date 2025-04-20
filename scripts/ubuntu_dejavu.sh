@@ -212,6 +212,9 @@ install_useful_packages() {
     # --- X11 utilities ---
     xdotool xclip xsel xorg
 
+    # --- FTP ---
+    filezilla
+
     # --- File system and drive support ---
     ntfs-3g exfat-fuse
 
@@ -222,7 +225,7 @@ install_useful_packages() {
     samba samba-common-bin net-tools lsb-release curl wget git
 
     # --- Media support (full GStreamer stack) ---
-    gnome-sushi
+    gnome-sushi vlc
 
     # --- Python development ---
     python3-pip python3-venv python3-dev
@@ -248,9 +251,6 @@ install_useful_packages() {
 
     # --- Weather ---
     gnome-weather
-
-    # --- Screensaver ---
-    xscreensaver xscreensaver-gl-extra xscreensaver-data-extra mpv
 
     # --- Camera ---
     # gnome-snapshot # for ubuntu 24.04
@@ -653,6 +653,9 @@ launcher_main() {
 
     install_appimage_launcher
     install_extra_codec
+
+    source "${THIS_FILE_PARENT_DIR}/apps/screen-saver/install_x_screen_saver.sh"
+    main
 
     # * install browsers by sub scripts    
     source "${THIS_FILE_PARENT_DIR}/apps/browser/install_firefox_by_apt_repo.sh"

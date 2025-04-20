@@ -1,5 +1,5 @@
 #!/bin/bash
-# script_name: install_xscreen_saver.sh
+# script_name: install_x_screen_saver.sh
 # version: 1.0.0
 set -e
 
@@ -67,58 +67,54 @@ unlock_sudo() {
 
 
 
-setup_xscreensaver_autostart() {
-  cl_print "[*INFO*] - Creating Barrier (server mode) autostart setup..."
+setup_x_screensaver_autostart() {
+  cl_print "[*INFO*] - Creating X Screen Saver autostart ..."
 
   local autostart_dir="${HOME}/.config/autostart"
-  local barrier_desktop_path="${autostart_dir}/barrier.desktop"
+  local install_x_screen_saver_desktop_path="${autostart_dir}/xscreensaver.desktop"
 
   # Ensure autostart directory exists
   mkdir -p "${autostart_dir}"
 
-  # Create the barrier.desktop file directly
-  cat <<EOF > "${barrier_desktop_path}"
+  # Create the xscreensaver.desktop file
+  cat <<EOF > "${install_x_screen_saver_desktop_path}"
 [Desktop Entry]
 Type=Application
-Exec=/usr/bin/barrier
+Exec=xscreensaver -no-splash
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
-Name[en_US]=Barrier
-Name=Barrier
-Comment[en_US]=run barrier
-Comment=run barrier
+Name=xscreensaver
+Comment=Start xscreensaver daemon
 EOF
 
   # Set correct permissions
-  chmod +x "${barrier_desktop_path}"
+  chmod +x "${install_x_screen_saver_desktop_path}"
 
   # Validate setup
-  if [[ -f "${barrier_desktop_path}" && -x "${barrier_desktop_path}" ]]; then
-    cl_print "[*INFO*] - Barrier autostart setup successfully." "green"
+  if [[ -f "${install_x_screen_saver_desktop_path}" ]] && \
+     grep -q "Exec=xscreensaver -no-splash" "${install_x_screen_saver_desktop_path}" && \
+     grep -q "X-GNOME-Autostart-enabled=true" "${install_x_screen_saver_desktop_path}"; then
+    cl_print "[*SUCCESS*] - X Screen Saver autostart setup completed and validated. \n" "green"
   else
-    cl_print "[*ERROR*] - Failed to set up Barrier autostart." "red"
+    cl_print "[*ERROR*] - Failed to properly create X Screen Saver autostart setup." "red"
   fi
 }
 
 
-install_barrier() {
-  cl_print "[*INFO*] - Start installing Barrier ..." "magenta"
+install_x_screen_saver() {
+  cl_print "[*INFO*] - Start installing X Screen Saver ..."
 
   unlock_sudo
 
-  # Update package list
-  sudo apt update
+  sudo apt-get install -y xscreensaver xscreensaver-gl-extra xscreensaver-data-extra mpv
 
-  # Install Barrier
-  sudo apt install -y barrier
-
-  cl_print "[*INFO*] - Barrier installed and systemd service created.\n" "green"
+  cl_print "[*INFO*] - X Screen Saver installed successfully. \n" "green"
 }
 
 main() {
-  install_barrier
-  setup_barrier_autostart
+  install_x_screen_saver
+  setup_x_screensaver_autostart
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

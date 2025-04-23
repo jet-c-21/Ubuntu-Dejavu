@@ -20,6 +20,7 @@ Tired of the same Ubuntu setup déjà vu over and over? Ubuntu-Dejavu is what yo
 - `Status Area Horizontal Spacing`
 - `GSConnect`
 - [`Just Perfection`](https://extensions.gnome.org/extension/3843/just-perfection/)
+- [`Sound Input & Output Device Chooser`](https://extensions.gnome.org//extension/906/sound-output-device-chooser/): only for ubuntu `22.04`
 
 # VMWare Workstation
 

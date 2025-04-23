@@ -91,6 +91,27 @@ unlock_sudo() {
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< use and unlock sudo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+purge_anydesk() {
+  cl_print "[*INFO*] - Start purging AnyDesk ..."
+
+  unlock_sudo
+
+  # Remove the AnyDesk package
+  sudo apt purge -y anydesk
+
+  # Remove the AnyDesk repository list
+  sudo rm -f /etc/apt/sources.list.d/anydesk-stable.list
+
+  # Remove the AnyDesk GPG key
+  sudo rm -f /etc/apt/keyrings/keys.anydesk.com.asc
+
+  # Clean up unused dependencies
+  sudo apt autoremove -y
+  sudo apt clean
+
+  cl_print "[*INFO*] - Finished purging AnyDesk \n" "green"
+}
+
  install_anydesk() {
    # this ppa version will make fullscreen and resolution behavior weird
    cl_print "[*INFO*] - Start installing AnyDesk ..."
@@ -118,6 +139,7 @@ unlock_sudo() {
 
 main() {
   install_anydesk
+#  purge_anydesk
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

@@ -1,6 +1,6 @@
 #!/bin/bash
 # script name: ubuntu_dejavu.sh
-# version: 1.0.2
+# version: 1.0.3
 set -e
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> color print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

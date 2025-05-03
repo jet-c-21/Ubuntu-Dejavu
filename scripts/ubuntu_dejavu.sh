@@ -267,6 +267,9 @@ install_useful_packages() {
     # --- Performance speed up ---
     preload
 
+    # --- iphone ---
+    ipheth-utils libimobiledevice-dev libimobiledevice-utils ifuse gvfs-backends gvfs-fuse
+
     # --- Fonts (must be last) ---
     fonts-firacode
   )
